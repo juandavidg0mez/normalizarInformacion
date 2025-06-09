@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Vista de Datos</title>
+</head>
+<body>
+    <h1>Datos Normalizados tempalte default </h1>
+    <p><strong>Norma:</strong> <span th:text="${norma}"></span></p>
+    <p><strong>Activo:</strong> <span th:text="${activo}"></span></p>
+    <p><strong>Tipo de Aplicación:</strong> <span th:text="${tipoAplicacion}"></span></p>
+    <p><strong>Tenant:</strong> <span th:text="${tenant}"></span></p>
+    <p><strong>Pool User ID:</strong> <span th:text="${poolUserId}"></span></p>
+
+    <h2>Datos desde la Lambda Python</h2>
+    <ul>
+        <li th:each="entry : ${#maps.entries(datosNormalizados)}">
+            <strong th:text="${entry.key}"></strong>: <span th:text="${entry.value}"></span>
+        </li>
+    </ul>
+</body>
+</html>

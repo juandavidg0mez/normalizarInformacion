@@ -1,8 +1,10 @@
 package com.normalizar.controller;
 
 import java.nio.charset.StandardCharsets;
+import java.util.HashMap;
 import java.util.Map;
 
+//import org.thymeleaf.context.Context;
 import com.amazonaws.services.lambda.AWSLambda;
 import com.amazonaws.services.lambda.AWSLambdaClientBuilder;
 import com.amazonaws.services.lambda.model.InvokeRequest;
@@ -10,6 +12,9 @@ import com.amazonaws.services.lambda.model.InvokeResult;
 import com.amazonaws.services.lambda.runtime.Context;
 import com.amazonaws.services.lambda.runtime.RequestHandler;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.normalizar.templateMemori.ImpleCaseMemory;
+import com.normalizar.templateMemori.ItemplateCase;
+import com.normalizar.thymeleaRender.ThymeleaRenderTeamplate;
 
 // Esta manejador de peticion contiene la invocacion del la normalizacion en pocas palabras es la primera que tiene contacto con el exterior
 // Recibe un JSON con metadatos + archivo en base64.
@@ -28,6 +33,11 @@ public class LambdaPipeLine implements RequestHandler<Map<String, Object>, Strin
 
     // Esto crea un cliente que puede invocar otras lambda adentro de la misma
     private final AWSLambda lambdaClient = AWSLambdaClientBuilder.defaultClient();
+    private ItemplateCase itemplateCase;
+    
+    public LambdaPipeLine(){
+        this.itemplateCase = new ImpleCaseMemory();
+    }
 
     @Override
     public String handleRequest(Map<String, Object> input, Context context) {
@@ -56,12 +66,28 @@ public class LambdaPipeLine implements RequestHandler<Map<String, Object>, Strin
 
             String jsonResult = new String(result.getPayload().array(), StandardCharsets.UTF_8);
             Map<String, Object> dataNormalizada = new ObjectMapper().readValue(jsonResult, Map.class);
+            Map<String, Object> modelo = new HashMap<>();
 
-            return "Esto es un Request reposne";
+            modelo.put("norma", norma);
+            modelo.put("activo", activo);
+            modelo.put("tipoAplication", tipoAplication);
+            modelo.put("tennat", tennat);
+            modelo.put("poolUserId", poolUserId);
+            modelo.put("archivoBase64", archivoBase64);
+
+            modelo.putAll(dataNormalizada);
+
+            String template = this.itemplateCase.SelectTempalte(norma);
+
+            String html = ThymeleaRenderTeamplate.render(template, modelo);
+            return html;
+
         } catch (Exception e) {
             e.printStackTrace();
             return "{\"error\": \"Error procesando la solicitud\"}";
         }
     }
+             
+    
 
 }
