@@ -42,6 +42,8 @@ public class LambdaPipeLine implements RequestHandler<Map<String, Object>, Strin
     @Override
     public String handleRequest(Map<String, Object> input, Context context) {
         try {
+
+            // Aca toma los datos del request
             String norma = (String) input.get("norma");
             String activo = (String) input.get("activo");
             String tipoAplication = (String) input.get("tipoAplication");
@@ -56,7 +58,7 @@ public class LambdaPipeLine implements RequestHandler<Map<String, Object>, Strin
 
             // Armamos la lambda y la cargamos con el payload
             InvokeRequest request = new InvokeRequest()
-                    .withFunctionName("")
+                    .withFunctionName("arn:aws:lambda:us-east-1:240435918890:function:normalizarExcel")
                     .withInvocationType("RequestResponse")
                     .withPayload(new ObjectMapper().writeValueAsString(payloadPython));
 
@@ -65,6 +67,7 @@ public class LambdaPipeLine implements RequestHandler<Map<String, Object>, Strin
             InvokeResult result = lambdaClient.invoke(request);
 
             String jsonResult = new String(result.getPayload().array(), StandardCharsets.UTF_8);
+            @SuppressWarnings("unchecked")
             Map<String, Object> dataNormalizada = new ObjectMapper().readValue(jsonResult, Map.class);
             Map<String, Object> modelo = new HashMap<>();
 
@@ -77,7 +80,7 @@ public class LambdaPipeLine implements RequestHandler<Map<String, Object>, Strin
 
             modelo.putAll(dataNormalizada);
 
-            String template = this.itemplateCase.SelectTempalte(norma);
+            String template = itemplateCase.selectTemplate(norma);
 
             String html = ThymeleaRenderTeamplate.render(template, modelo);
             return html;
