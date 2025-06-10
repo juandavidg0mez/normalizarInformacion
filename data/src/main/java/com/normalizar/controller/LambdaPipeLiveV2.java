@@ -6,16 +6,12 @@ import java.io.OutputStream;
 import java.net.URI;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
-import java.nio.charset.StandardCharsets;
+
 import java.util.HashMap;
 import java.util.Map;
 
 
 
-import com.amazonaws.services.lambda.AWSLambda;
-import com.amazonaws.services.lambda.AWSLambdaClientBuilder;
-import com.amazonaws.services.lambda.model.InvokeRequest;
-import com.amazonaws.services.lambda.model.InvokeResult;
 import com.amazonaws.services.lambda.runtime.Context;
 import com.amazonaws.services.lambda.runtime.RequestStreamHandler;
 import com.amazonaws.services.lambda.runtime.events.APIGatewayV2HTTPEvent;
@@ -75,8 +71,6 @@ public class LambdaPipeLiveV2 implements RequestStreamHandler {
             System.out.println(jsonResult);
 
 
-            // ejecutamos la lambda que estamos invocando la armamos y la activamos como un
-            // arma del minecraft
             @SuppressWarnings("unchecked")
             Map<String, Object> dataNormalizada = objectMapper.readValue(jsonResult, Map.class);
             Map<String, Object> modelo = new HashMap<>();
