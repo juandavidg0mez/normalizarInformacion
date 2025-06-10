@@ -1,0 +1,8 @@
+com\normalizar\controller\LambdaPipeLine.class
+com\normalizar\domain\Report.class
+com\normalizar\domain\ResponseReport.class
+com\normalizar\thymeleaRender\ThymeleaRenderTeamplate.class
+com\normalizar\controller\LambdaPipeLiveV2.class
+com\normalizar\templateMemori\ItemplateCase.class
+com\normalizar\templateMemori\ImpleCaseMemory.class
+com\normalizar\Main.class
