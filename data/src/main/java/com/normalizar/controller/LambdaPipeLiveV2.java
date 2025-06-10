@@ -3,6 +3,9 @@ package com.normalizar.controller;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.net.URI;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
@@ -23,10 +26,10 @@ import com.normalizar.domain.ResponseReport;
 import com.normalizar.templateMemori.ImpleCaseMemory;
 import com.normalizar.templateMemori.ItemplateCase;
 import com.normalizar.thymeleaRender.ThymeleaRenderTeamplate;
-
+import java.net.http.HttpClient;
 public class LambdaPipeLiveV2 implements RequestStreamHandler {
     private static final ObjectMapper objectMapper = new ObjectMapper();
-    private final AWSLambda lambdaClient = AWSLambdaClientBuilder.defaultClient();
+    private final HttpClient httpClient = HttpClient.newHttpClient(); 
     private ItemplateCase itemplateCase;
 
     public LambdaPipeLiveV2() {
@@ -43,38 +46,49 @@ public class LambdaPipeLiveV2 implements RequestStreamHandler {
             String norma = report.getNorma();
             String activo = report.getActivo();
             String application = report.getApplication();
-            String tennat = report.getTenant();
+            String tenant = report.getTenant();
             String poolUserId = report.getPoolUserId();
             String archivoToFront = report.getArchivoToFront();
 
             // Payload para lambda "Normalizar"
-            Map<String, String> payloadPython = Map.of("file_base64", archivoToFront);
+            Map<String, String> payloadInterno = Map.of("file_base64", archivoToFront);
             // <PajazoMental> y aca podemos scarlos a una base datos creo yo como un puerto
             // de salida (DB , *dinnamoDB*)
+            String jsonInterno = objectMapper.writeValueAsString(payloadInterno);
+            // Armamos la el requesr y la cargamos con el payload
+            HttpRequest request = HttpRequest.newBuilder()
+                    .uri(URI.create("https://e989ua8tf9.execute-api.us-east-1.amazonaws.com/dev/inter_normalizar"))
+                    .header("Content-Type", "application/json")
+                    .POST(HttpRequest.BodyPublishers.ofString(jsonInterno))
+                    .build();
+                
+            HttpResponse<String> httpResponse = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
 
-            // Armamos la lambda y la cargamos con el payload
-            InvokeRequest request = new InvokeRequest()
-                    .withFunctionName("arn:aws:lambda:us-east-1:240435918890:function:normalizarExcel")
-                    .withInvocationType("RequestResponse")
-                    .withPayload(new ObjectMapper().writeValueAsString(payloadPython));
+             // Verifica el código de estado HTTP
+            if (httpResponse.statusCode() != 200) {
+                throw new RuntimeException("Error al invocar el servicio de normalización: " + httpResponse.body());
+            }
+            // Logs
+
+            String jsonResult = httpResponse.body();
+            System.out.println("Respuesta del servicio de normalización:");
+            System.out.println(jsonResult);
+
 
             // ejecutamos la lambda que estamos invocando la armamos y la activamos como un
             // arma del minecraft
-            InvokeResult result = lambdaClient.invoke(request);
-
-            String jsonResult = new String(result.getPayload().array(), StandardCharsets.UTF_8);
-            // @SuppressWarnings("unchecked")
+            @SuppressWarnings("unchecked")
             Map<String, Object> dataNormalizada = objectMapper.readValue(jsonResult, Map.class);
             Map<String, Object> modelo = new HashMap<>();
 
             modelo.put("norma", norma);
             modelo.put("activo", activo);
-            modelo.put("tipoAplication", application);
-            modelo.put("tennat", tennat);
+            modelo.put("application", application);
+            modelo.put("tenant", tenant);
             modelo.put("poolUserId", poolUserId);
             modelo.put("archivoBase64", archivoToFront);
 
-            modelo.putAll(dataNormalizada);
+            modelo.put("dataNormalizada", dataNormalizada);
 
             String template = itemplateCase.selectTemplate(norma);
 
