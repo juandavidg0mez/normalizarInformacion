@@ -1,6 +1,6 @@
 package com.normalizar.domain;
 
-import java.util.Base64;
+
 
 public class Report {
     private String norma;
@@ -8,13 +8,13 @@ public class Report {
     private String application;
     private String tenant;
     private String poolUserId;
-    private Base64 archivoToFront;
+    private String archivoToFront;
 
     public Report() {
     }
 
     public Report(String norma, String activo, String application, String tenant, String poolUserId,
-            Base64 archivoToFront) {
+            String archivoToFront) {
         this.norma = norma;
         this.activo = activo;
         this.application = application;
@@ -63,11 +63,11 @@ public class Report {
         this.poolUserId = poolUserId;
     }
 
-    public Base64 getArchivoToFront() {
+    public String getArchivoToFront() {
         return archivoToFront;
     }
 
-    public void setArchivoToFront(Base64 archivoToFront) {
+    public void setArchivoToFront(String archivoToFront) {
         this.archivoToFront = archivoToFront;
     }
 }

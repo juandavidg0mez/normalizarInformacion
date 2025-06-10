@@ -11,6 +11,7 @@ import com.amazonaws.services.lambda.model.InvokeRequest;
 import com.amazonaws.services.lambda.model.InvokeResult;
 import com.amazonaws.services.lambda.runtime.Context;
 import com.amazonaws.services.lambda.runtime.RequestHandler;
+import com.amazonaws.services.lambda.runtime.events.APIGatewayV2HTTPEvent;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.normalizar.templateMemori.ImpleCaseMemory;
 import com.normalizar.templateMemori.ItemplateCase;
@@ -30,7 +31,7 @@ import com.normalizar.thymeleaRender.ThymeleaRenderTeamplate;
 // Retorna el HTML como String (por ejemplo, para usarlo en una vista previa o correo).
 
 public class LambdaPipeLine implements RequestHandler<Map<String, Object>, String> {
-
+    private static final ObjectMapper objectMapper = new ObjectMapper();
     // Esto crea un cliente que puede invocar otras lambda adentro de la misma
     private final AWSLambda lambdaClient = AWSLambdaClientBuilder.defaultClient();
     private ItemplateCase itemplateCase;
@@ -83,6 +84,7 @@ public class LambdaPipeLine implements RequestHandler<Map<String, Object>, Strin
             String template = itemplateCase.selectTemplate(norma);
 
             String html = ThymeleaRenderTeamplate.render(template, modelo);
+            
             return html;
 
         } catch (Exception e) {
