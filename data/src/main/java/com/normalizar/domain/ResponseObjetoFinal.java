@@ -1,6 +1,10 @@
 package com.normalizar.domain;
 
 public class ResponseObjetoFinal {
+
+    private String archivoPDF;
+    private String message;
+
     public ResponseObjetoFinal(String archivoPDF, String message) {
         this.archivoPDF = archivoPDF;
         this.message = message;
@@ -8,9 +12,6 @@ public class ResponseObjetoFinal {
 
     public ResponseObjetoFinal() {
     }
-
-    private String archivoPDF;
-    private String message;
 
     public String getArchivoPDF() {
         return archivoPDF;
