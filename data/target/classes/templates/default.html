@@ -1,25 +1,304 @@
+Comprendo perfectamente tu situación y los desafíos que enfrentas. Tienes una buena arquitectura con la separación de responsabilidades en Lambdas, lo cual es excelente. Vamos a abordar tus puntos clave: fusionar las conclusiones, generar gráficos y navegar por el JSON, todo dentro de tu flujo asíncrono actual.
+
+Análisis de tu LambdaGeneratePDF Actual
+Tu LambdaGeneratePDF ya recibe un objeto ConclusionesObjetoFinal. Dentro de este objeto, recibes:
+
+conclucionesMap: Un mapa de conclusiones (parece ser Map<Integer, String>).
+templateCrudo: Una cadena que es el HTML de la plantilla.
+userPoolId, tenantName: Datos adicionales para S3.
+Actualmente, esta lambda toma templateCrudo directamente y lo convierte a PDF: itemplateCase.generatePdfromHtml(teamplateCrudo). Esto significa que la plantilla HTML ya debería contener todos los datos y las conclusiones cuando llega a esta lambda.
+
+Solución Propuesta: Backend Genera el HTML Final con Conclusiones y Gráficos
+La forma más robusta y segura de integrar las conclusiones (creadas en el frontend) y los gráficos (generados en el backend) en el PDF final es que tu backend (específicamente LambdaGeneratePDF) sea quien construya el HTML completo antes de convertirlo a PDF. Esto implica que el frontend le envíe todos los datos necesarios a LambdaGeneratePDF, no solo el HTML "crudo".
+
+Aquí te detallo cómo modificar tu flujo y código:
+
+1. Modificar ConclusionesObjetoFinal (Payload de Entrada para LambdaGeneratePDF)
+Necesitamos que ConclusionesObjetoFinal contenga todos los datos necesarios para renderizar la plantilla completa en Thymeleaf:
+
+Los datos originales del reporte (norma, activo, application, etc.).
+Los dataNormalizada que obtuviste de la lambda de normalización.
+Las conclusiones ingresadas por el usuario.
+Java
+
+// src/main/java/com/normalizar/domain/ConclusionesObjetoFinal.java
+package com.normalizar.domain;
+
+import java.util.List; // O Map<Integer, String> si lo prefieres para conclusiones
+import java.util.Map;
+
+public class ConclusionesObjetoFinal {
+    // Datos del reporte original (de la primera llamada)
+    private String norma;
+    private String activo;
+    private String application;
+    private String tenant;
+    private String poolUserId;
+    // private String archivoToFront; // No necesario para generar el PDF final
+
+    // Datos normalizados (respuesta de la primera lambda)
+    private Map<String, Object> dataNormalizada;
+
+    // Conclusiones generadas por el usuario
+    private List<String> userConclusions; // Preferible List<String> para mostrar viñetas, o String para un párrafo largo.
+                                       // Si Map<Integer, String>, ajusta en el frontend y en la plantilla.
+
+    // Datos adicionales para S3
+    private String userPoolId;
+    private String tenantName;
+    private String fileName; // Añadir esto para que el frontend lo pueda sugerir o enviar
+
+    // *** ¡IMPORTANTE! Quita 'template' de aquí ***
+    // private String template; // <-- REMOVER ESTO, la lambda generará la plantilla
+
+    // Constructor vacío (necesario para ObjectMapper)
+    public ConclusionesObjetoFinal() {}
+
+    // Constructor con todos los campos (opcional, para conveniencia)
+    public ConclusionesObjetoFinal(String norma, String activo, String application, String tenant, String poolUserId,
+                                   Map<String, Object> dataNormalizada, List<String> userConclusions,
+                                   String userPoolId, String tenantName, String fileName) {
+        this.norma = norma;
+        this.activo = activo;
+        this.application = application;
+        this.tenant = tenant;
+        this.poolUserId = poolUserId;
+        this.dataNormalizada = dataNormalizada;
+        this.userConclusions = userConclusions;
+        this.userPoolId = userPoolId;
+        this.tenantName = tenantName;
+        this.fileName = fileName;
+    }
+
+    // Getters y Setters para todos los campos
+    public String getNorma() { return norma; }
+    public void setNorma(String norma) { this.norma = norma; }
+    public String getActivo() { return activo; }
+    public void setActivo(String activo) { this.activo = activo; }
+    public String getApplication() { return application; }
+    public void setApplication(String application) { this.application = application; }
+    public String getTenant() { return tenant; }
+    public void setTenant(String tenant) { this.tenant = tenant; }
+    public String getPoolUserId() { return poolUserId; }
+    public void setPoolUserId(String poolUserId) { this.poolUserId = poolUserId; }
+    public Map<String, Object> getDataNormalizada() { return dataNormalizada; }
+    public void setDataNormalizada(Map<String, Object> dataNormalizada) { this.dataNormalizada = dataNormalizada; }
+    public List<String> getUserConclusions() { return userConclusions; }
+    public void setUserConclusions(List<String> userConclusions) { this.userConclusions = userConclusions; }
+    public String getUserPoolId() { return userPoolId; }
+    public void setUserPoolId(String userPoolId) { this.userPoolId = userPoolId; }
+    public String getTenantName() { return tenantName; }
+    public void setTenantName(String tenantName) { this.tenantName = tenantName; }
+    public String getFileName() { return fileName; }
+    public void setFileName(String fileName) { this.fileName = fileName; }
+}
+2. Modificar LambdaGeneratePDF para Construir el HTML y Generar Gráficos
+Esta lambda ahora será la responsable de armar el modelo completo para Thymeleaf, incluyendo las conclusiones del usuario y los gráficos generados en el backend.
+
+Java
+
+// src/main/java/com/normalizar/controller/LambdaGeneratePDF.java
+package com.normalizar.controller;
+
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.net.URI;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
+import java.util.Base64; // Importar Base64
+import java.util.HashMap;
+import java.util.Map;
+import java.util.UUID; // Para generar un nombre de archivo único
+
+import com.amazonaws.services.lambda.runtime.Context;
+import com.amazonaws.services.lambda.runtime.RequestStreamHandler;
+import com.amazonaws.services.lambda.runtime.events.APIGatewayV2HTTPEvent;
+import com.amazonaws.services.lambda.runtime.events.APIGatewayV2HTTPResponse;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.normalizar.domain.ConclusionesObjetoFinal; // Modificado
+import com.normalizar.domain.ResponseObjetoFinal;
+import com.normalizar.templateMemori.ImpleCaseMemory;
+import com.normalizar.templateMemori.ItemplateCase;
+import com.normalizar.thymeleaRender.ThymeleaRenderTeamplate; // Necesario para renderizar HTML
+import com.normalizar.pdf.PdfGeneratorService; // Necesario para generar PDF
+import com.normalizar.charts.ChartGenerator; // Necesario para generar gráficos
+
+public class LambdaGeneratePDF implements RequestStreamHandler {
+    private static final ObjectMapper objectMapper = new ObjectMapper();
+    private ItemplateCase itemplateCase; // Esto parece ser tu servicio para seleccionar templates
+    private final HttpClient httpClient = HttpClient.newHttpClient();
+
+    public LambdaGeneratePDF() {
+        this.itemplateCase = new ImpleCaseMemory();
+    }
+
+    @Override
+    public void handleRequest(InputStream input, OutputStream output, Context context) throws IOException {
+        try {
+            APIGatewayV2HTTPEvent event = objectMapper.readValue(input, APIGatewayV2HTTPEvent.class);
+            ConclusionesObjetoFinal requestData = objectMapper.readValue(event.getBody(), ConclusionesObjetoFinal.class);
+
+            // --- 1. Construir el Modelo para Thymeleaf ---
+            Map<String, Object> modelo = new HashMap<>();
+            
+            // Datos del reporte original
+            modelo.put("norma", requestData.getNorma());
+            modelo.put("activo", requestData.getActivo());
+            modelo.put("application", requestData.getApplication());
+            modelo.put("tenant", requestData.getTenant());
+            modelo.put("poolUserId", requestData.getPoolUserId());
+
+            // Datos normalizados (del JSON de la lambda de normalización)
+            modelo.put("dataNormalizada", requestData.getDataNormalizada());
+
+            // Conclusiones del usuario
+            modelo.put("conclusiones", requestData.getUserConclusions()); // Puede ser List<String> o String
+
+            // Generar Gráficos (asumiendo que ChartGenerator existe y funciona)
+            String chartImageBase64 = null;
+            // Debes asegurarte de que requestData.getDataNormalizada() contiene los datos
+            // que necesitas para el gráfico. Por ejemplo:
+            @SuppressWarnings("unchecked")
+            Map<String, Object> chartData = (Map<String, Object>) requestData.getDataNormalizada().get("chartData"); // Ajusta "chartData" a la clave real en tu JSON
+            if (chartData != null && !chartData.isEmpty()) {
+                 try {
+                    chartImageBase64 = ChartGenerator.createBarChartAsBase64(chartData);
+                    modelo.put("chartImageBase64", chartImageBase64);
+                 } catch (Exception chartEx) {
+                     context.getLogger().log("Error generando gráfico: " + chartEx.getMessage());
+                     // Considera poner un placeholder o mensaje de error en el HTML si el gráfico falla
+                 }
+            }
+
+
+            // --- 2. Renderizar el HTML Final con Thymeleaf ---
+            String templateName = itemplateCase.selectTemplate(requestData.getNorma()); // Seleccionar la plantilla
+            String htmlFinal = ThymeleaRenderTeamplate.render(templateName, modelo);
+
+            // --- 3. Generar el PDF a partir del HTML Final ---
+            byte[] pdfBytes = PdfGeneratorService.generatePdfFromHtml(htmlFinal);
+            String pdfBase64 = Base64.getEncoder().encodeToString(pdfBytes);
+
+            // --- 4. Preparar Payload para la Lambda de Subida a S3 ---
+            // Asegúrate de que el payload para la lambda de S3 sea el correcto.
+            // Es mejor enviar el byte array directamente o el Base64, NO .toString() del byte array.
+            // Si la lambda de S3 espera Base64, hazlo así:
+            
+            String fileName = requestData.getFileName(); // Nombre sugerido por el front
+            if (fileName == null || fileName.isEmpty()) {
+                fileName = "reporte_" + UUID.randomUUID().toString() + ".pdf"; // Generar nombre único si no se proporciona
+            } else {
+                if (!fileName.toLowerCase().endsWith(".pdf")) { // Asegurarse de que tenga la extensión .pdf
+                    fileName += ".pdf";
+                }
+            }
+            
+            Map<String, String> s3Payload = new HashMap<>();
+            s3Payload.put("base64File", pdfBase64); // ¡Usar pdfBase64!
+            s3Payload.put("userPoolId", requestData.getUserPoolId());
+            s3Payload.put("tenantName", requestData.getTenantName());
+            s3Payload.put("fileName", fileName);
+            
+            String jsonS3Payload = objectMapper.writeValueAsString(s3Payload);
+
+            HttpRequest request = HttpRequest.newBuilder()
+                    .uri(URI.create("https://e989ua8tf9.execute-api.us-east-1.amazonaws.com/dev/uploadDoc"))
+                    .header("Content-Type", "application/json")
+                    .POST(HttpRequest.BodyPublishers.ofString(jsonS3Payload))
+                    .build();
+                        
+            HttpResponse<String> httpResponse = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
+
+            // Verifica el código de estado HTTP de la subida a S3
+            if (httpResponse.statusCode() != 200) {
+                throw new RuntimeException("Error al invocar el servicio de subida a S3: " + httpResponse.body());
+            }
+
+            // --- 5. Responder al Frontend ---
+            ResponseObjetoFinal responseObjetoFinal = new ResponseObjetoFinal("Se subió el Archivo PDF: " + fileName + " Correctamente. S3 Response: " + httpResponse.body());
+            
+            Map<String, String> headers = new HashMap<>();
+            headers.put("Content-Type", "application/json");
+            headers.put("Access-Control-Allow-Origin", "*");
+
+            APIGatewayV2HTTPResponse response = APIGatewayV2HTTPResponse.builder()
+                    .withStatusCode(200)
+                    .withBody(objectMapper.writeValueAsString(responseObjetoFinal))
+                    .withHeaders(headers)
+                    .build();
+            
+            output.write(objectMapper.writeValueAsBytes(response));
+
+        } catch (Exception e) {
+            context.getLogger().log("Error en LambdaGeneratePDF: " + e.getMessage()); // Logs más detallados
+            e.printStackTrace(); // Para depuración en CloudWatch
+
+            Map<String, String> errorBody = Map.of("error", e.getMessage());
+            Map<String, String> errorHeaders = new HashMap<>();
+            errorHeaders.put("Content-Type", "application/json");
+            errorHeaders.put("Access-Control-Allow-Origin", "*");
+
+            APIGatewayV2HTTPResponse errorResponse = APIGatewayV2HTTPResponse.builder()
+                    .withStatusCode(500)
+                    .withBody(objectMapper.writeValueAsString(errorBody))
+                    .withHeaders(errorHeaders)
+                    .build();
+
+            output.write(objectMapper.writeValueAsBytes(errorResponse));
+        }
+    }
+}
+3. Ajustar tu Plantilla HTML (default.html)
+Ahora que la lambda LambdaGeneratePDF está construyendo el modelo completo, la plantilla HTML necesita incluir placeholders para las conclusiones y los gráficos.
+
+HTML
+
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 
 <head>
     <meta charset="UTF-8">
     <title>Vista de Datos</title>
+    <style>
+        /* Estilos CSS para el PDF */
+        body { font-family: Arial, sans-serif; line-height: 1.6; }
+        h1, h2 { color: #333; }
+        ul { list-style: disc; margin-left: 20px; }
+        img { max-width: 100%; height: auto; display: block; margin: 20px auto; } /* Centrar imagen */
+        .conclusion-list { margin-top: 15px; }
+    </style>
 </head>
 
 <body>
-    <h1>Datos Normalizados tempalte default </h1>
+    <h1>Reporte de Normalización</h1>
     <p><strong>Norma:</strong> <span th:text="${norma}"></span></p>
     <p><strong>Activo:</strong> <span th:text="${activo}"></span></p>
     <p><strong>Tipo de Aplicación:</strong> <span th:text="${application}"></span></p>
     <p><strong>Tenant:</strong> <span th:text="${tenant}"></span></p>
     <p><strong>Pool User ID:</strong> <span th:text="${poolUserId}"></span></p>
 
-    <h2>Datos desde la Lambda Python</h2>
+    <h2>Datos Normalizados</h2>
     <ul>
         <li th:each="entry : ${dataNormalizada}">
             <span th:text="${entry.key}"></span>: <span th:text="${entry.value}"></span>
         </li>
     </ul>
-</body>
 
+    <h2 th:if="${chartImageBase64 != null}">Gráfico de Análisis</h2>
+    <div th:if="${chartImageBase64 != null}">
+        <img th:src="'data:image/png;base64,' + ${chartImageBase64}" alt="Gráfico de Datos Normalizados">
+    </div>
+
+    <h2 th:if="${conclusiones != null and not #lists.isEmpty(conclusiones)}">Conclusiones</h2>
+    <div th:if="${conclusiones != null and not #lists.isEmpty(conclusiones)}" class="conclusion-list">
+        <ul th:if="${conclusiones instanceof T(java.util.List)}">
+            <li th:each="conclusion : ${conclusiones}" th:text="${conclusion}"></li>
+        </ul>
+        <p th:unless="${conclusiones instanceof T(java.util.List)}" th:text="${conclusiones}"></p>
+    </div>
+
+</body>
 </html>
