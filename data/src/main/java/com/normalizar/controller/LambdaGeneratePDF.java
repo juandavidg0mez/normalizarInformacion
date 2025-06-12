@@ -1,6 +1,6 @@
 package com.normalizar.controller;
 
-import java.io.ByteArrayOutputStream;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -24,7 +24,7 @@ import com.normalizar.templateMemori.ImpleCaseMemory;
 import com.normalizar.templateMemori.ItemplateCase;
 import com.normalizar.thymeleaRender.ThymeleaRenderTeamplate;
 
-import software.amazon.awssdk.services.s3.endpoints.internal.Value.Str;
+
 
 public class LambdaGeneratePDF implements RequestStreamHandler {
     private static final ObjectMapper objectMapper = new ObjectMapper();
@@ -47,7 +47,7 @@ public class LambdaGeneratePDF implements RequestStreamHandler {
             Map<String, Object> modelo = new HashMap<>();
             // Datos del reporte Original
 
-            // Esto lo podemos mandar a u meotodo que se encargue de como paremetro una key
+            // Esto lo podemos mandar a u metodo que se encargue de como paremetro una key
             // un map y value (11/06/25)
             modelo.put("norma", requestData.getNorma());
             modelo.put("activo", requestData.getActivo());
@@ -94,7 +94,7 @@ public class LambdaGeneratePDF implements RequestStreamHandler {
             String jsonInterno = objectMapper.writeValueAsString(payload);
 
             HttpRequest request = HttpRequest.newBuilder()
-                    .uri(URI.create("https://e989ua8tf9.execute-api.us-east-1.amazonaws.com/dev/uploadDoc"))
+                    .uri(URI.create("https://e989ua8tf9.execute-api.us-east-1.amazonaws.com/dev/upLoadFile"))
                     .header("Content-Type", "application/json")
                     .POST(HttpRequest.BodyPublishers.ofString(jsonInterno))
                     .build();

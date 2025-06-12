@@ -9,8 +9,9 @@ import java.net.http.HttpResponse;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 
-
+import org.joda.time.Instant;
 
 import com.amazonaws.services.lambda.runtime.Context;
 import com.amazonaws.services.lambda.runtime.RequestStreamHandler;
@@ -19,17 +20,28 @@ import com.amazonaws.services.lambda.runtime.events.APIGatewayV2HTTPResponse;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.normalizar.domain.Report;
 import com.normalizar.domain.ResponseReport;
+import com.normalizar.repositoryDynamoDB.ImplUseCaseDynamoDB;
+import com.normalizar.repositoryDynamoDB.IuseCaseDynamoDB;
+import com.normalizar.repositoryDynamoDB.entity.MetaDataReport;
 import com.normalizar.templateMemori.ImpleCaseMemory;
 import com.normalizar.templateMemori.ItemplateCase;
 import com.normalizar.thymeleaRender.ThymeleaRenderTeamplate;
+
+import software.amazon.awssdk.services.dynamodb.DynamoDBClient;
+
 import java.net.http.HttpClient;
+
 public class LambdaPipeLiveV2 implements RequestStreamHandler {
     private static final ObjectMapper objectMapper = new ObjectMapper();
-    private final HttpClient httpClient = HttpClient.newHttpClient(); 
+    private final HttpClient httpClient = HttpClient.newHttpClient();
     private ItemplateCase itemplateCase;
+    private IuseCaseDynamoDB iuseCaseDynamoDB;
+    private final DynamoDBClient dbClient;
 
     public LambdaPipeLiveV2() {
         this.itemplateCase = new ImpleCaseMemory();
+        this.dbClient = DynamoDBClient.create();
+        this.iuseCaseDynamoDB = new ImplUseCaseDynamoDB();
     }
 
     @Override
@@ -57,19 +69,74 @@ public class LambdaPipeLiveV2 implements RequestStreamHandler {
                     .header("Content-Type", "application/json")
                     .POST(HttpRequest.BodyPublishers.ofString(jsonInterno))
                     .build();
-                
+
             HttpResponse<String> httpResponse = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
 
-             // Verifica el código de estado HTTP
+            // Verifica el código de estado HTTP
             if (httpResponse.statusCode() != 200) {
                 throw new RuntimeException("Error al invocar el servicio de normalización: " + httpResponse.body());
             }
-            // Logs
 
+            // Repuesta de la lambda de normalizacion captado El body
             String jsonResult = httpResponse.body();
+            // Logs
             System.out.println("Respuesta del servicio de normalización:");
             System.out.println(jsonResult);
 
+            // Llamada s3
+
+            String fileName = ""; // Nombre sugerido por el front
+            if (fileName == null || fileName.isEmpty()) {
+                fileName = "data_normalizada" + UUID.randomUUID().toString() + ".json"; // Generar nombre único si no se
+                // proporciona
+            } else {
+                if (!fileName.toLowerCase().endsWith(".json")) { // Asegurarse de que tenga la extensión .pdf
+                    fileName += ".json";
+                }
+            }
+
+            // Creacion del payload de lambda S3
+            Map<String, String> payload = Map.of(
+                    "base64File", jsonResult,
+                    "userPoolId", report.getPoolUserId(),
+                    "tenantName", report.getTenant(),
+                    "fileName", fileName);
+            String jsonInternoS3 = objectMapper.writeValueAsString(payload);
+
+            HttpRequest requestS3 = HttpRequest.newBuilder()
+                    .uri(URI.create("https://e989ua8tf9.execute-api.us-east-1.amazonaws.com/dev/upLoadFile"))
+                    .header("Content-Type", "application/json")
+                    .POST(HttpRequest.BodyPublishers.ofString(jsonInternoS3))
+                    .build();
+
+            HttpResponse<String> httpResponseS3 = httpClient.send(requestS3, HttpResponse.BodyHandlers.ofString());
+
+            // Verifica el código de estado HTTP
+            if (httpResponseS3.statusCode() != 200) {
+                throw new RuntimeException("Error al invocar el servicio de S3: " + httpResponseS3.body());
+            }
+
+            // DynamoDB
+            String reporteId = UUID.randomUUID().toString();
+            String timestamp = Instant.now().toString();
+
+            // Create metaDataReport
+
+            MetaDataReport metaDataReportDTO = new MetaDataReport();
+            String pathJsonS3 = tenant + "/" + poolUserId + "/reports/" + fileName;
+            metaDataReportDTO.setActivo(tenant);
+            metaDataReportDTO.setActivo(activo);
+            metaDataReportDTO.setApplication(application);
+            metaDataReportDTO.setTenantId(tenant);
+            metaDataReportDTO.setPoolUserId(poolUserId);
+            metaDataReportDTO.setReporteId(reporteId);
+            metaDataReportDTO.setS3JsonPath(pathJsonS3);
+            metaDataReportDTO.setS3PdfPath("Missing But Soon");
+            metaDataReportDTO.setTimestamp(timestamp);
+            metaDataReportDTO.setEstado("NORMALIZADO");
+
+            String saveItem = this.iuseCaseDynamoDB.CreateItem(metaDataReportDTO, dbClient, "ReportsTableBy_EliDev");
+            System.out.println(saveItem);
 
             @SuppressWarnings("unchecked")
             Map<String, Object> dataNormalizada = objectMapper.readValue(jsonResult, Map.class);

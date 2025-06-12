@@ -13,7 +13,18 @@
         <maven.compiler.target>17</maven.compiler.target>
     </properties>
     <dependencies>
-        <dependency>
+
+    <!-- Dynamo dependecy -->
+
+        <!-- https://mvnrepository.com/artifact/software.amazon.awssdk/dynamodb -->
+    <dependency>
+        <groupId>software.amazon.awssdk</groupId>
+        <artifactId>dynamodb</artifactId>
+        <version>2.0.0-preview-2</version>
+    </dependency>
+
+    <!-- HTML plantillas -->
+    <dependency>
         <groupId>org.thymeleaf</groupId>
         <artifactId>thymeleaf</artifactId>
         <version>3.1.3.RELEASE</version>
@@ -23,26 +34,26 @@
         <artifactId>openpdf</artifactId>
         <version>1.3.30</version>
     </dependency>
-        <dependency>
-            <groupId>org.xhtmlrenderer</groupId>
-            <artifactId>flying-saucer-pdf</artifactId>
-            <version>9.1.20</version>
-        </dependency>
+    <dependency>
+        <groupId>org.xhtmlrenderer</groupId>
+        <artifactId>flying-saucer-pdf</artifactId>
+        <version>9.1.20</version>
+    </dependency>
     <dependency>
         <groupId>com.amazonaws</groupId>
         <artifactId>aws-lambda-java-core</artifactId>
         <version>1.2.1</version>
     </dependency>
-            <dependency>
-            <groupId>com.amazonaws</groupId>
-            <artifactId>aws-lambda-java-core</artifactId>
-            <version>1.2.2</version>
-        </dependency>
-        <dependency>
-    <groupId>com.amazonaws</groupId>
-    <artifactId>aws-java-sdk-lambda</artifactId>
-    <version>1.12.700</version> <!-- Puedes usar la versión más reciente -->
-</dependency>
+    <dependency>
+        <groupId>com.amazonaws</groupId>
+        <artifactId>aws-lambda-java-core</artifactId>
+        <version>1.2.2</version>
+    </dependency>
+    <dependency>
+        <groupId>com.amazonaws</groupId>
+        <artifactId>aws-java-sdk-lambda</artifactId>
+        <version>1.12.700</version> <!-- Puedes usar la versión más reciente -->
+    </dependency>
         <dependency>
             <groupId>com.amazonaws</groupId>
             <artifactId>aws-lambda-java-events</artifactId>
@@ -52,11 +63,6 @@
         <groupId>com.openhtmltopdf</groupId>
         <artifactId>openhtmltopdf-pdfbox</artifactId>
         <version>1.0.10</version>
-    </dependency>
-    <dependency>
-        <groupId>com.amazonaws</groupId>
-        <artifactId>aws-lambda-java-events</artifactId>
-        <version>3.11.0</version>
     </dependency>
     <dependency>
         <groupId>software.amazon.awssdk</groupId>
@@ -70,11 +76,6 @@
     <dependency>
         <groupId>com.fasterxml.jackson.core</groupId>
         <artifactId>jackson-databind</artifactId>
-        <version>2.16.1</version>
-    </dependency>
-    <dependency>
-        <groupId>com.fasterxml.jackson.core</groupId>
-        <artifactId>jackson-core</artifactId>
         <version>2.16.1</version>
     </dependency>
     <dependency>

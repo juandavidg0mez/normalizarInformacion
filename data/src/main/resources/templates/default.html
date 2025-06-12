@@ -287,10 +287,10 @@ HTML
         </li>
     </ul>
 
-    <h2 th:if="${chartImageBase64 != null}">Gráfico de Análisis</h2>
+    <!-- <h2 th:if="${chartImageBase64 != null}">Gráfico de Análisis</h2>
     <div th:if="${chartImageBase64 != null}">
         <img th:src="'data:image/png;base64,' + ${chartImageBase64}" alt="Gráfico de Datos Normalizados">
-    </div>
+    </div> -->
 
     <h2 th:if="${conclusiones != null and not #lists.isEmpty(conclusiones)}">Conclusiones</h2>
     <div th:if="${conclusiones != null and not #lists.isEmpty(conclusiones)}" class="conclusion-list">

@@ -1,7 +1,7 @@
 package com.normalizar.templateMemori;
 
 
-import java.io.ByteArrayOutputStream;
+
 import java.io.IOException;
 
 public interface ItemplateCase {
