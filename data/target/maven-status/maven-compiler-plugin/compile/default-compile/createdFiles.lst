@@ -1,8 +1,14 @@
-com\normalizar\controller\LambdaPipeLine.class
 com\normalizar\domain\Report.class
+com\normalizar\repositoryDynamoDB\entity\MetaDataReport.class
+com\normalizar\templateMemori\ImpleCaseMemory.class
+com\normalizar\repositoryDynamoDB\IuseCaseDynamoDB.class
+com\normalizar\repositoryDynamoDB\ImplUseCaseDynamoDB.class
+com\normalizar\domain\ResponseObjetoFinal.class
 com\normalizar\domain\ResponseReport.class
 com\normalizar\thymeleaRender\ThymeleaRenderTeamplate.class
 com\normalizar\controller\LambdaPipeLiveV2.class
+com\normalizar\domain\ConclusionesObjetoFinal.class
 com\normalizar\templateMemori\ItemplateCase.class
-com\normalizar\templateMemori\ImpleCaseMemory.class
 com\normalizar\Main.class
+com\normalizar\config\ConfigDynamoDBClient.class
+com\normalizar\controller\LambdaGeneratePDF.class

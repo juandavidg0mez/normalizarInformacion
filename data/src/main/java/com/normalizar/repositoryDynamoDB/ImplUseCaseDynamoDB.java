@@ -6,9 +6,9 @@ import java.util.Map;
 
 import com.normalizar.repositoryDynamoDB.entity.MetaDataReport;
 
-import software.amazon.awssdk.services.dynamodb.DynamoDBClient;
+import software.amazon.awssdk.services.dynamodb.DynamoDbClient;
 import software.amazon.awssdk.services.dynamodb.model.AttributeValue;
-import software.amazon.awssdk.services.dynamodb.model.DynamoDBException;
+import software.amazon.awssdk.services.dynamodb.model.DynamoDbException;
 import software.amazon.awssdk.services.dynamodb.model.PutItemRequest;
 
 public class ImplUseCaseDynamoDB implements IuseCaseDynamoDB {
@@ -24,14 +24,14 @@ public class ImplUseCaseDynamoDB implements IuseCaseDynamoDB {
     }
 
     @Override
-    public String CreateItem(MetaDataReport metaDataReport, DynamoDBClient client, String tableName) {
+    public String CreateItem(MetaDataReport metaDataReport, DynamoDbClient client, String tableName) {
         // Lo que tengo que hacer es mapear el lo que venga de afuera Externamente, para
         // poder enviar esto Al repository
         // Debemos tener encuenta los nombres del objeto que viene del exterior
         try {
             Map<String, AttributeValue> item = new HashMap<>();
-            item.put("tenant_id", AttributeValue.builder().s(metaDataReport.getTenantId()).build());
-            item.put("reporte:is", AttributeValue.builder().s(metaDataReport.getReporteId()).build());
+            item.put("tenant_id", AttributeValue.builder().s(metaDataReport.getTenant_id()).build());
+            item.put("report_id", AttributeValue.builder().s(metaDataReport.getReport_id()).build());
             item.put("norma", AttributeValue.builder().s(metaDataReport.getNorma()).build());
             item.put("activo", AttributeValue.builder().s(metaDataReport.getActivo()).build());
             item.put("application", AttributeValue.builder().s(metaDataReport.getApplication()).build());
@@ -48,10 +48,10 @@ public class ImplUseCaseDynamoDB implements IuseCaseDynamoDB {
                     
             client.putItem(putItemRequest);
             System.out.println("Metadatos del reporte guardados exitosamente para tenant: "
-                    + metaDataReport.getTenantId() + ", reporteId: " + metaDataReport.getReporteId());
-            return "Metadatos del reporte guardados en DynamoDB para tenant: " + metaDataReport.getTenantId()
-                    + ", reporteId: " + metaDataReport.getReporteId();
-        } catch (DynamoDBException e) {
+                    + metaDataReport.getTenant_id() + ", reporteId: " + metaDataReport.getReport_id());
+            return "Metadatos del reporte guardados en DynamoDB para tenant: " + metaDataReport.getTenant_id()
+                    + ", reporteId: " + metaDataReport.getReport_id();
+        } catch (DynamoDbException e) {
             // Log the specific DynamoDB exception for better debugging
             System.err.println("Error de DynamoDB al guardar ítem: " + e.getMessage());
             // Re-throw a custom runtime exception or a more generic one

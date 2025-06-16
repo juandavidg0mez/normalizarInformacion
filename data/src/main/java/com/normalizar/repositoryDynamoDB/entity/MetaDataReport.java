@@ -1,8 +1,8 @@
 package com.normalizar.repositoryDynamoDB.entity;
 
 public class MetaDataReport {
-    private String tenantId;
-    private String reporteId;
+    private String tenant_id;
+    private String report_id;
     private String norma; // Estandar con el que se elaboro el teamplate del reporte
     private String activo;
     private String application;
@@ -15,10 +15,10 @@ public class MetaDataReport {
     public MetaDataReport() {
     }
 
-    public MetaDataReport(String tenantId, String reporteId, String norma, String activo, String application,
+    public MetaDataReport(String tenant_id, String report_id, String norma, String activo, String application,
             String poolUserId, String s3JsonPath, String s3PdfPath, String timestamp, String estado) {
-        this.tenantId = tenantId;
-        this.reporteId = reporteId;
+        this.tenant_id = tenant_id;
+        this.report_id = report_id;
         this.norma = norma;
         this.activo = activo;
         this.application = application;
@@ -29,20 +29,20 @@ public class MetaDataReport {
         this.estado = estado;
     }
 
-    public String getTenantId() {
-        return tenantId;
+    public String getTenant_id() {
+        return tenant_id;
     }
 
-    public void setTenantId(String tenantId) {
-        this.tenantId = tenantId;
+    public void setTenant_id(String tenant_id) {
+        this.tenant_id = tenant_id;
     }
 
-    public String getReporteId() {
-        return reporteId;
+    public String getReport_id() {
+        return report_id;
     }
 
-    public void setReporteId(String reporteId) {
-        this.reporteId = reporteId;
+    public void setReport_id(String report_id) {
+        this.report_id = report_id;
     }
 
     public String getNorma() {
@@ -108,5 +108,8 @@ public class MetaDataReport {
     public void setEstado(String estado) {
         this.estado = estado;
     }
+
+
+
 
 }

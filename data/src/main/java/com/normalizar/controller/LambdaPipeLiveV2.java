@@ -6,8 +6,11 @@ import java.io.OutputStream;
 import java.net.URI;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
-
+import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.Base64;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
@@ -27,7 +30,7 @@ import com.normalizar.templateMemori.ImpleCaseMemory;
 import com.normalizar.templateMemori.ItemplateCase;
 import com.normalizar.thymeleaRender.ThymeleaRenderTeamplate;
 
-import software.amazon.awssdk.services.dynamodb.DynamoDBClient;
+import software.amazon.awssdk.services.dynamodb.DynamoDbClient;
 
 import java.net.http.HttpClient;
 
@@ -36,11 +39,11 @@ public class LambdaPipeLiveV2 implements RequestStreamHandler {
     private final HttpClient httpClient = HttpClient.newHttpClient();
     private ItemplateCase itemplateCase;
     private IuseCaseDynamoDB iuseCaseDynamoDB;
-    private final DynamoDBClient dbClient;
+    private final DynamoDbClient dbClient;
 
     public LambdaPipeLiveV2() {
         this.itemplateCase = new ImpleCaseMemory();
-        this.dbClient = DynamoDBClient.create();
+        this.dbClient = DynamoDbClient.create();
         this.iuseCaseDynamoDB = new ImplUseCaseDynamoDB();
     }
 
@@ -59,7 +62,7 @@ public class LambdaPipeLiveV2 implements RequestStreamHandler {
             String archivoToFront = report.getArchivoToFront();
 
             // Payload para lambda "Normalizar"
-            Map<String, String> payloadInterno = Map.of("file_base64", archivoToFront);
+            Map<String, String> payloadInterno = Map.of("file", archivoToFront);
             // <PajazoMental> y aca podemos scarlos a una base datos creo yo como un puerto
             // de salida (DB , *dinnamoDB*)
             String jsonInterno = objectMapper.writeValueAsString(payloadInterno);
@@ -95,13 +98,18 @@ public class LambdaPipeLiveV2 implements RequestStreamHandler {
                 }
             }
 
-            // Creacion del payload de lambda S3
-            Map<String, String> payload = Map.of(
-                    "base64File", jsonResult,
-                    "userPoolId", report.getPoolUserId(),
-                    "tenantName", report.getTenant(),
-                    "fileName", fileName);
-            String jsonInternoS3 = objectMapper.writeValueAsString(payload);
+            String normallizedJsonString = objectMapper.writeValueAsString(jsonResult);
+            String base64EncodedJson = Base64.getEncoder()
+                    .encodeToString(normallizedJsonString.getBytes(StandardCharsets.UTF_8));
+
+            // **CORRECCIÓN AQUÍ: Crear un payload que coincida con NewObjectRequest**
+            Map<String, String> payloadS3 = new HashMap<>(); // Usar solo String para valores simples
+            payloadS3.put("userPoolId", report.getPoolUserId());
+            payloadS3.put("tenantName", report.getTenant());
+            payloadS3.put("fileName", fileName); // Nombre del archivo directamente
+            payloadS3.put("fileBase64", base64EncodedJson); // Contenido Base64 directamente
+
+            String jsonInternoS3 = objectMapper.writeValueAsString(payloadS3);
 
             HttpRequest requestS3 = HttpRequest.newBuilder()
                     .uri(URI.create("https://e989ua8tf9.execute-api.us-east-1.amazonaws.com/dev/upLoadFile"))
@@ -117,25 +125,25 @@ public class LambdaPipeLiveV2 implements RequestStreamHandler {
             }
 
             // DynamoDB
-            String reporteId = UUID.randomUUID().toString();
+            String report_id= UUID.randomUUID().toString();
             String timestamp = Instant.now().toString();
 
             // Create metaDataReport
 
             MetaDataReport metaDataReportDTO = new MetaDataReport();
             String pathJsonS3 = tenant + "/" + poolUserId + "/reports/" + fileName;
-            metaDataReportDTO.setActivo(tenant);
             metaDataReportDTO.setActivo(activo);
             metaDataReportDTO.setApplication(application);
-            metaDataReportDTO.setTenantId(tenant);
+            metaDataReportDTO.setTenant_id(tenant);
             metaDataReportDTO.setPoolUserId(poolUserId);
-            metaDataReportDTO.setReporteId(reporteId);
+            metaDataReportDTO.setReport_id(report_id);
             metaDataReportDTO.setS3JsonPath(pathJsonS3);
             metaDataReportDTO.setS3PdfPath("Missing But Soon");
+            metaDataReportDTO.setNorma(norma);
             metaDataReportDTO.setTimestamp(timestamp);
             metaDataReportDTO.setEstado("NORMALIZADO");
 
-            String saveItem = this.iuseCaseDynamoDB.CreateItem(metaDataReportDTO, dbClient, "ReportsTableBy_EliDev");
+            String saveItem = this.iuseCaseDynamoDB.CreateItem(metaDataReportDTO, dbClient, "tablaReports");
             System.out.println(saveItem);
 
             @SuppressWarnings("unchecked")
@@ -150,9 +158,9 @@ public class LambdaPipeLiveV2 implements RequestStreamHandler {
             modelo.put("archivoBase64", archivoToFront);
 
             modelo.put("dataNormalizada", dataNormalizada);
-
+            modelo.put("conclusiones", new ArrayList<>());
             String template = itemplateCase.selectTemplate(norma);
-
+            // lo que debemos hacer creo yo es cambiar el proceso de este fragmento para arriba 
             String html = ThymeleaRenderTeamplate.render(template, modelo);
 
             ResponseReport reponseBody = new ResponseReport(html);
