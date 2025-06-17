@@ -7,10 +7,9 @@ import java.net.URI;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
+
 import java.util.Base64;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
@@ -21,6 +20,7 @@ import com.amazonaws.services.lambda.runtime.RequestStreamHandler;
 import com.amazonaws.services.lambda.runtime.events.APIGatewayV2HTTPEvent;
 import com.amazonaws.services.lambda.runtime.events.APIGatewayV2HTTPResponse;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.normalizar.domain.GraficaData;
 import com.normalizar.domain.Report;
 import com.normalizar.domain.ResponseReport;
 import com.normalizar.repositoryDynamoDB.ImplUseCaseDynamoDB;
@@ -29,6 +29,8 @@ import com.normalizar.repositoryDynamoDB.entity.MetaDataReport;
 import com.normalizar.templateMemori.ImpleCaseMemory;
 import com.normalizar.templateMemori.ItemplateCase;
 import com.normalizar.thymeleaRender.ThymeleaRenderTeamplate;
+import com.normalizar.utility.ImappingUseCase;
+import com.normalizar.utility.impl.ImplMappingUseCase;
 
 import software.amazon.awssdk.services.dynamodb.DynamoDbClient;
 
@@ -40,11 +42,12 @@ public class LambdaPipeLiveV2 implements RequestStreamHandler {
     private ItemplateCase itemplateCase;
     private IuseCaseDynamoDB iuseCaseDynamoDB;
     private final DynamoDbClient dbClient;
-
+    private ImappingUseCase imappingUseCase;
     public LambdaPipeLiveV2() {
         this.itemplateCase = new ImpleCaseMemory();
         this.dbClient = DynamoDbClient.create();
         this.iuseCaseDynamoDB = new ImplUseCaseDynamoDB();
+        this.imappingUseCase = new ImplMappingUseCase();
     }
 
     @Override
@@ -85,7 +88,9 @@ public class LambdaPipeLiveV2 implements RequestStreamHandler {
             // Logs
             System.out.println("Respuesta del servicio de normalización:");
             System.out.println(jsonResult);
-
+            Map<String, Object> allChartData = objectMapper.readValue(jsonResult, Map.class);
+            GraficaData graficaCNData = objectMapper.convertValue(allChartData.get("GraficaCN"), GraficaData.class);
+            GraficaData graficaRCNData = objectMapper.convertValue(allChartData.get("GraficaRCN"), GraficaData.class);
             // Llamada s3
 
             String fileName = ""; // Nombre sugerido por el front
@@ -129,13 +134,15 @@ public class LambdaPipeLiveV2 implements RequestStreamHandler {
             String timestamp = Instant.now().toString();
 
             // Create metaDataReport
-
+            
             MetaDataReport metaDataReportDTO = new MetaDataReport();
             String pathJsonS3 = tenant + "/" + poolUserId + "/reports/" + fileName;
             metaDataReportDTO.setActivo(activo);
             metaDataReportDTO.setApplication(application);
             metaDataReportDTO.setTenant_id(tenant);
             metaDataReportDTO.setPoolUserId(poolUserId);
+
+            // el item no se edita por que el report_id es diferente
             metaDataReportDTO.setReport_id(report_id);
             metaDataReportDTO.setS3JsonPath(pathJsonS3);
             metaDataReportDTO.setS3PdfPath("Missing But Soon");
@@ -146,24 +153,13 @@ public class LambdaPipeLiveV2 implements RequestStreamHandler {
             String saveItem = this.iuseCaseDynamoDB.CreateItem(metaDataReportDTO, dbClient, "tablaReports");
             System.out.println(saveItem);
 
-            @SuppressWarnings("unchecked")
-            Map<String, Object> dataNormalizada = objectMapper.readValue(jsonResult, Map.class);
-            Map<String, Object> modelo = new HashMap<>();
+            Map<String, Object> modelo = imappingUseCase.mapJsonToThymeleafModel(jsonResult, report);
 
-            modelo.put("norma", norma);
-            modelo.put("activo", activo);
-            modelo.put("application", application);
-            modelo.put("tenant", tenant);
-            modelo.put("poolUserId", poolUserId);
-            modelo.put("archivoBase64", archivoToFront);
-
-            modelo.put("dataNormalizada", dataNormalizada);
-            modelo.put("conclusiones", new ArrayList<>());
             String template = itemplateCase.selectTemplate(norma);
             // lo que debemos hacer creo yo es cambiar el proceso de este fragmento para arriba 
             String html = ThymeleaRenderTeamplate.render(template, modelo);
 
-            ResponseReport reponseBody = new ResponseReport(html);
+            ResponseReport reponseBody = new ResponseReport(metaDataReportDTO.getReport_id(),html, graficaCNData, graficaRCNData); 
 
             Map<String, String> headers = new HashMap<>();
             headers.put("Content-Type", "application/json");

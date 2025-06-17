@@ -5,6 +5,7 @@ import java.time.Instant;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -15,15 +16,15 @@ import com.normalizar.domain.Report;
 import com.normalizar.utility.ImappingUseCase;
 
 
-/**
-     * Parses the raw JSON string and maps its content to a structured Map
-     * suitable for Thymeleaf rendering.
-     *
-     * @param jsonString The raw JSON string from the normalization service.
-     * @param report The Report object from the initial request, used for header data.
-     * @return A Map<String, Object> containing data structured for Thymeleaf.
-     * @throws IOException If JSON parsing fails.
-*/
+// 
+//      * Parses the raw JSON string and maps its content to a structured Map
+//      * suitable for Thymeleaf rendering.
+//      *
+//      * @param jsonString The raw JSON string from the normalization service.
+//      * @param report The Report object from the initial request, used for header data.
+//      * @return A Map<String, Object> containing data structured for Thymeleaf.
+//      * @throws IOException If JSON parsing fails.
+// 
 
 
 public class ImplMappingUseCase implements ImappingUseCase {
@@ -47,14 +48,14 @@ public class ImplMappingUseCase implements ImappingUseCase {
             informacionGeneral.put("fabricante", infoGeneral.get("fabricante"));
             informacionGeneral.put("modelo", infoGeneral.get("modelo"));
             informacionGeneral.put("numero_de_serie", infoGeneral.get("numero_de_serie"));
-            informacionGeneral.put(" I_priaria", infoGeneral.get("I_priaria"));
+            informacionGeneral.put("I_priaria", infoGeneral.get("I_priaria"));
             informacionGeneral.put("I_secundaria", infoGeneral.get("I_secundaria"));
             informacionGeneral.put("Nucleo", infoGeneral.get("Nucleo"));
             informacionGeneral.put("applicacion", infoGeneral.get("applicacion"));
             informacionGeneral.put("norma", infoGeneral.get("norma"));
             informacionGeneral.put("clase", infoGeneral.get("clase"));
             informacionGeneral.put("Burden", infoGeneral.get("Burden"));
-            informacionGeneral.put("Compañia", informacionGeneral.get("Compañia"));
+            informacionGeneral.put("Compañia", infoGeneral.get("Compañia"));
             informacionGeneral.put("planta", infoGeneral.get("planta"));
             informacionGeneral.put("subestacion", infoGeneral.get("subestacion"));
             informacionGeneral.put("tag", infoGeneral.get("tag"));
@@ -94,6 +95,12 @@ public class ImplMappingUseCase implements ImappingUseCase {
         }
 
         // tablaRelacionCorrienteNominal
+
+        List<String> burdenLabelsRC = Arrays.asList("10 / 0,8", "5 / 0,8", "2,5 / 1", "1,25 / 1");
+        modelo.put("burdenLabelsRC", burdenLabelsRC);
+
+        List<String> burdenLabelsCN = Arrays.asList("10 / 0,8", "5 / 0,8", "2,5 / 1", "1,25 / 1");
+        modelo.put("burdenLabelsCN", burdenLabelsCN);
 
         Map<String, Object> tablaRelacionCorrienteNominal = (Map<String, Object>) fullNormalizedData.get("tablaRelacionCorrienteNominal");
         if (tablaRelacionCorrienteNominal != null) {

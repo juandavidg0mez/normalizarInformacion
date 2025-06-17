@@ -1,8 +1,8 @@
 package com.normalizar.repositoryDynamoDB;
 
 import java.util.HashMap;
-import java.util.Map;
 
+import java.util.Map;
 
 import com.normalizar.repositoryDynamoDB.entity.MetaDataReport;
 
@@ -28,7 +28,9 @@ public class ImplUseCaseDynamoDB implements IuseCaseDynamoDB {
         // Lo que tengo que hacer es mapear el lo que venga de afuera Externamente, para
         // poder enviar esto Al repository
         // Debemos tener encuenta los nombres del objeto que viene del exterior
+
         try {
+
             Map<String, AttributeValue> item = new HashMap<>();
             item.put("tenant_id", AttributeValue.builder().s(metaDataReport.getTenant_id()).build());
             item.put("report_id", AttributeValue.builder().s(metaDataReport.getReport_id()).build());
@@ -45,12 +47,14 @@ public class ImplUseCaseDynamoDB implements IuseCaseDynamoDB {
                     .tableName(tableName)
                     .item(item)
                     .build();
-                    
+
             client.putItem(putItemRequest);
             System.out.println("Metadatos del reporte guardados exitosamente para tenant: "
                     + metaDataReport.getTenant_id() + ", reporteId: " + metaDataReport.getReport_id());
+
             return "Metadatos del reporte guardados en DynamoDB para tenant: " + metaDataReport.getTenant_id()
                     + ", reporteId: " + metaDataReport.getReport_id();
+
         } catch (DynamoDbException e) {
             // Log the specific DynamoDB exception for better debugging
             System.err.println("Error de DynamoDB al guardar ítem: " + e.getMessage());

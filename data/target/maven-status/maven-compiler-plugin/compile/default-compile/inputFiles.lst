@@ -2,6 +2,7 @@ C:\Users\jdgomez\Documents\certificados\ca\ServicioReportesS3\Normalizacion\norm
 C:\Users\jdgomez\Documents\certificados\ca\ServicioReportesS3\Normalizacion\normalizarInformacion\data\src\main\java\com\normalizar\controller\LambdaGeneratePDF.java
 C:\Users\jdgomez\Documents\certificados\ca\ServicioReportesS3\Normalizacion\normalizarInformacion\data\src\main\java\com\normalizar\controller\LambdaPipeLiveV2.java
 C:\Users\jdgomez\Documents\certificados\ca\ServicioReportesS3\Normalizacion\normalizarInformacion\data\src\main\java\com\normalizar\domain\ConclusionesObjetoFinal.java
+C:\Users\jdgomez\Documents\certificados\ca\ServicioReportesS3\Normalizacion\normalizarInformacion\data\src\main\java\com\normalizar\domain\GraficaData.java
 C:\Users\jdgomez\Documents\certificados\ca\ServicioReportesS3\Normalizacion\normalizarInformacion\data\src\main\java\com\normalizar\domain\Report.java
 C:\Users\jdgomez\Documents\certificados\ca\ServicioReportesS3\Normalizacion\normalizarInformacion\data\src\main\java\com\normalizar\domain\ResponseObjetoFinal.java
 C:\Users\jdgomez\Documents\certificados\ca\ServicioReportesS3\Normalizacion\normalizarInformacion\data\src\main\java\com\normalizar\domain\ResponseReport.java
@@ -12,3 +13,5 @@ C:\Users\jdgomez\Documents\certificados\ca\ServicioReportesS3\Normalizacion\norm
 C:\Users\jdgomez\Documents\certificados\ca\ServicioReportesS3\Normalizacion\normalizarInformacion\data\src\main\java\com\normalizar\templateMemori\ImpleCaseMemory.java
 C:\Users\jdgomez\Documents\certificados\ca\ServicioReportesS3\Normalizacion\normalizarInformacion\data\src\main\java\com\normalizar\templateMemori\ItemplateCase.java
 C:\Users\jdgomez\Documents\certificados\ca\ServicioReportesS3\Normalizacion\normalizarInformacion\data\src\main\java\com\normalizar\thymeleaRender\ThymeleaRenderTeamplate.java
+C:\Users\jdgomez\Documents\certificados\ca\ServicioReportesS3\Normalizacion\normalizarInformacion\data\src\main\java\com\normalizar\utility\ImappingUseCase.java
+C:\Users\jdgomez\Documents\certificados\ca\ServicioReportesS3\Normalizacion\normalizarInformacion\data\src\main\java\com\normalizar\utility\impl\ImplMappingUseCase.java
