@@ -21,7 +21,7 @@ public class ImplUseCaseDynamoDB implements IuseCaseDynamoDB {
         } catch (Exception e) {
             throw new UnsupportedOperationException("Unimplemented method 'CreateItem'");
         }
-    }
+    }                           
 
     @Override
     public String CreateItem(MetaDataReport metaDataReport, DynamoDbClient client, String tableName) {

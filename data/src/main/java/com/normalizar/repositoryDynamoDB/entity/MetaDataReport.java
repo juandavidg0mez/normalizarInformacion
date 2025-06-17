@@ -1,6 +1,6 @@
 package com.normalizar.repositoryDynamoDB.entity;
 
-import java.util.List;
+
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
