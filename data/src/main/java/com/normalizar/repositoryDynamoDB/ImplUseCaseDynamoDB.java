@@ -34,9 +34,7 @@ public class ImplUseCaseDynamoDB implements IuseCaseDynamoDB {
             Map<String, AttributeValue> item = new HashMap<>();
             item.put("tenant_id", AttributeValue.builder().s(metaDataReport.getTenant_id()).build());
             item.put("report_id", AttributeValue.builder().s(metaDataReport.getReport_id()).build());
-            item.put("norma", AttributeValue.builder().s(metaDataReport.getNorma()).build());
             item.put("activo", AttributeValue.builder().s(metaDataReport.getActivo()).build());
-            item.put("application", AttributeValue.builder().s(metaDataReport.getApplication()).build());
             item.put("poolUserId", AttributeValue.builder().s(metaDataReport.getPoolUserId()).build());
             item.put("s3_json_path", AttributeValue.builder().s(metaDataReport.getS3JsonPath()).build());
             item.put("s3_pdf_path", AttributeValue.builder().s(metaDataReport.getS3PdfPath()).build());

@@ -11,10 +11,8 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class MetaDataReport {
     private String tenant_id;
-    private String report_id;
-    private String norma; // Estandar con el que se elaboro el teamplate del reporte
+    private String report_id;// Estandar con el que se elaboro el teamplate del reporte
     private String activo;
-    private String application;
     private String poolUserId;
     private String s3JsonPath;
     private String s3PdfPath;

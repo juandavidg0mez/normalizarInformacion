@@ -21,6 +21,7 @@ import com.amazonaws.services.lambda.runtime.events.APIGatewayV2HTTPEvent;
 import com.amazonaws.services.lambda.runtime.events.APIGatewayV2HTTPResponse;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.normalizar.domain.GraficaData;
+import com.normalizar.domain.GraficaDataExi;
 import com.normalizar.domain.Report;
 import com.normalizar.domain.ResponseReport;
 import com.normalizar.repositoryDynamoDB.ImplUseCaseDynamoDB;
@@ -43,6 +44,7 @@ public class LambdaPipeLiveV2 implements RequestStreamHandler {
     private IuseCaseDynamoDB iuseCaseDynamoDB;
     private final DynamoDbClient dbClient;
     private ImappingUseCase imappingUseCase;
+
     public LambdaPipeLiveV2() {
         this.itemplateCase = new ImpleCaseMemory();
         this.dbClient = DynamoDbClient.create();
@@ -57,9 +59,8 @@ public class LambdaPipeLiveV2 implements RequestStreamHandler {
             Report report = objectMapper.readValue(event.getBody(), Report.class);
 
             // MApeamos los objetos de la peticion (Request)
-            String norma = report.getNorma();
+
             String activo = report.getActivo();
-            String application = report.getApplication();
             String tenant = report.getTenant();
             String poolUserId = report.getPoolUserId();
             String archivoToFront = report.getArchivoToFront();
@@ -85,12 +86,15 @@ public class LambdaPipeLiveV2 implements RequestStreamHandler {
 
             // Repuesta de la lambda de normalizacion captado El body
             String jsonResult = httpResponse.body();
+            System.out.println("Este es el resultado real o crudo de la lambda normalizar" + jsonResult);
             // Logs
             System.out.println("Respuesta del servicio de normalización:");
             System.out.println(jsonResult);
             Map<String, Object> allChartData = objectMapper.readValue(jsonResult, Map.class);
             GraficaData graficaCNData = objectMapper.convertValue(allChartData.get("GraficaCN"), GraficaData.class);
             GraficaData graficaRCNData = objectMapper.convertValue(allChartData.get("GraficaRCN"), GraficaData.class);
+            GraficaDataExi graficaDataExi = objectMapper.convertValue(allChartData.get("Exitacion"),
+                    GraficaDataExi.class);
             // Llamada s3
 
             String fileName = ""; // Nombre sugerido por el front
@@ -130,15 +134,14 @@ public class LambdaPipeLiveV2 implements RequestStreamHandler {
             }
 
             // DynamoDB
-            String report_id= UUID.randomUUID().toString();
+            String report_id = UUID.randomUUID().toString();
             String timestamp = Instant.now().toString();
 
             // Create metaDataReport
-            
+
             MetaDataReport metaDataReportDTO = new MetaDataReport();
             String pathJsonS3 = tenant + "/" + poolUserId + "/reports/" + fileName;
             metaDataReportDTO.setActivo(activo);
-            metaDataReportDTO.setApplication(application);
             metaDataReportDTO.setTenant_id(tenant);
             metaDataReportDTO.setPoolUserId(poolUserId);
 
@@ -146,7 +149,6 @@ public class LambdaPipeLiveV2 implements RequestStreamHandler {
             metaDataReportDTO.setReport_id(report_id);
             metaDataReportDTO.setS3JsonPath(pathJsonS3);
             metaDataReportDTO.setS3PdfPath("Missing But Soon");
-            metaDataReportDTO.setNorma(norma);
             metaDataReportDTO.setTimestamp(timestamp);
             metaDataReportDTO.setEstado("NORMALIZADO");
 
@@ -155,11 +157,13 @@ public class LambdaPipeLiveV2 implements RequestStreamHandler {
 
             Map<String, Object> modelo = imappingUseCase.mapJsonToThymeleafModel(jsonResult, report);
 
-            String template = itemplateCase.selectTemplate(norma);
-            // lo que debemos hacer creo yo es cambiar el proceso de este fragmento para arriba 
+            String template = itemplateCase.selectTemplate(activo);
+            // lo que debemos hacer creo yo es cambiar el proceso de este fragmento para
+            // arriba
             String html = ThymeleaRenderTeamplate.render(template, modelo);
 
-            ResponseReport reponseBody = new ResponseReport(metaDataReportDTO.getReport_id(),html, graficaCNData, graficaRCNData); 
+            ResponseReport reponseBody = new ResponseReport(metaDataReportDTO.getReport_id(), html, graficaCNData,
+                    graficaRCNData, graficaDataExi);
 
             Map<String, String> headers = new HashMap<>();
             headers.put("Content-Type", "application/json");

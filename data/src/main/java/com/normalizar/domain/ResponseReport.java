@@ -12,6 +12,7 @@ public class ResponseReport {
     private String archivoHtml;
     private GraficaData graficaCNData; // Objeto con los datos del gráfico CN
     private GraficaData graficaRCNData; // Objeto con los datos del gráfico RCN
+    private GraficaDataExi graficaDataExi;
 
 
 

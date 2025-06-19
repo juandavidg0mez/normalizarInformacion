@@ -21,9 +21,9 @@ public class ThymeleaRenderTeamplate {
         engine.setTemplateResolver(templateResolver);
     }
 
-    public static String render(String template, Map<String, Object> modelo){
+    public static String render(String template, Map<String, Object> activo){
         Context context = new Context();
-        context.setVariables(modelo);
+        context.setVariables(activo);
         return engine.process(template, context);
     }
 }

@@ -241,37 +241,41 @@
         <table>
             <tr>
                 <td>Norma:</td>
-                <td th:text="${datosExitacion.norma}"></td>
+                <td th:text="${ResultadoExitacion.norma}"></td>
             </tr>
             <tr>
                 <td>V_Saturacion:</td>
-                <td th:text="${#numbers.formatDecimal(datosExitacion.V_Saturacion, 1, 3)}"></td>
+                <td th:text="${#numbers.formatDecimal(ResultadoExitacion.V_Saturacion, 1, 3)}"></td>
             </tr>
             <tr>
                 <td>I_magnet:</td>
-                <td th:text="${#numbers.formatDecimal(datosExitacion.I_magnet, 1, 6)}"></td>
+                <td th:text="${#numbers.formatDecimal(ResultadoExitacion.I_magnet, 1, 6)}"></td>
             </tr>
             <tr>
                 <td>ALF:</td>
-                <td th:text="${datosExitacion.ALF}"></td>
+                <td th:text="${ResultadoExitacion.ALF}"></td>
             </tr>
             <tr>
                 <td>ALFi:</td>
-                <td th:text="${datosExitacion.ALFi}"></td>
+                <td th:text="${ResultadoExitacion.ALFi}"></td>
             </tr>
             <tr>
                 <td>eci:</td>
-                <td th:text="${datosExitacion.eci}"></td>
+                <td th:text="${ResultadoExitacion.eci}"></td>
             </tr>
             <tr>
                 <td>Criterio:</td>
-                <td th:text="${datosExitacion.Cirterio}"></td>
+                <td th:text="${ResultadoExitacion.Cirterio}"></td>
             </tr>
             <tr>
                 <td>Evaluación:</td>
-                <td th:text="${datosExitacion.evaluacion}"></td>
+                <td th:text="${ResultadoExitacion.evaluacion}"></td>
             </tr>
         </table>
+
+         <div class="chart-container">
+            <canvas id="graficaExiChart"></canvas>
+        </div>
 
         <div class="section-title">CONCLUSIONES</div>
         <div class="conclusion-management-area">
