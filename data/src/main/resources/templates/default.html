@@ -3,23 +3,296 @@
 
 <head>
     <meta charset="UTF-8">
-    <title>Vista de Datos</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Informe de Transformador de Corriente</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        /* Estilos básicos para el informe */
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            color: #333;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            border: 1px solid #ccc;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        h1,
+        h2,
+        h3 {
+            color: #0056b3;
+            text-align: center;
+        }
+
+        .section-title {
+            background-color: #f0f0f0;
+            padding: 10px;
+            margin-top: 20px;
+            margin-bottom: 10px;
+            font-weight: bold;
+            text-align: center;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+
+        table,
+        th,
+        td {
+            border: 1px solid #ddd;
+        }
+
+        th,
+        td {
+            padding: 8px;
+            text-align: left;
+        }
+
+        th {
+            background-color: #f2f2f2;
+        }
+
+        .chart-container {
+            width: 100%;
+            max-width: 600px;
+            /* Ajusta según necesidad */
+            margin: 20px auto;
+        }
+
+        .conclusion-section {
+            margin-top: 30px;
+            padding: 15px;
+            border: 1px dashed #ccc;
+            background-color: #f9f9f9;
+        }
+
+        .chart-container canvas {
+            max-width: 100%;
+            /* Para que sea responsivo */
+            height: 400px;
+            /* Un alto fijo, puedes ajustar */
+        }
+    </style>
 </head>
 
 <body>
-    <h1>Datos Normalizados tempalte default </h1>
-    <p><strong>Norma:</strong> <span th:text="${norma}"></span></p>
-    <p><strong>Activo:</strong> <span th:text="${activo}"></span></p>
-    <p><strong>Tipo de Aplicación:</strong> <span th:text="${tipoAplicacion}"></span></p>
-    <p><strong>Tenant:</strong> <span th:text="${tenant}"></span></p>
-    <p><strong>Pool User ID:</strong> <span th:text="${poolUserId}"></span></p>
+    <div class="container" id="pdfReportid">
+        <h1>INFORME DE TRANSFORMADOR DE CORRIENTE</h1>
 
-    <h2>Datos desde la Lambda Python</h2>
-    <ul>
-        <li th:each="entry : ${dataNormalizada}">
-            <span th:text="${entry.key}"></span>: <span th:text="${entry.value}"></span>
-        </li>
-    </ul>
+        <div class="section-title">DETALLES DEL INFORME</div>
+        <table>
+            <tr>
+                <td>Protocolo:</td>
+                <td th:text="${header.protocolo}"></td>
+            </tr>
+            <tr>
+                <td>Hoja:</td>
+                <td th:text="${header.hoja}"></td>
+            </tr>
+            <tr>
+                <td>Código:</td>
+                <td th:text="${header.codigo}"></td>
+            </tr>
+            <tr>
+                <td>Ciudad:</td>
+                <td th:text="${header.ciudad}"></td>
+            </tr>
+            <tr>
+                <td>Fecha:</td>
+                <td th:text="${header.fecha}"></td>
+            </tr>
+        </table>
+
+        <div class="section-title">INFORMACIÓN GENERAL DEL EQUIPO</div>
+        <table>
+            <tr>
+                <td>Fabricante:</td>
+                <td th:text="${InformacionGeneral.fabricante}"></td>
+            </tr>
+            <tr>
+                <td>Modelo:</td>
+                <td th:text="${InformacionGeneral.modelo}"></td>
+            </tr>
+            <tr>
+                <td>Número de Serie:</td>
+                <td th:text="${InformacionGeneral.numero_de_serie}"></td>
+            </tr>
+            <tr>
+                <td>Corriente Primaria (I_priaria):</td>
+                <td th:text="${InformacionGeneral.I_priaria}"></td>
+            </tr>
+            <tr>
+                <td>Corriente Secundaria (I_secundaria):</td>
+                <td th:text="${InformacionGeneral.I_secundaria}"></td>
+            </tr>
+            <tr>
+                <td>Núcleo:</td>
+                <td th:text="${InformacionGeneral.Nucleo}"></td>
+            </tr>
+            <tr>
+                <td>Aplicación:</td>
+                <td th:text="${InformacionGeneral.applicacion}"></td>
+            </tr>
+            <tr>
+                <td>Norma:</td>
+                <td th:text="${InformacionGeneral.norma}"></td>
+            </tr>
+            <tr>
+                <td>Clase:</td>
+                <td th:text="${InformacionGeneral.clase}"></td>
+            </tr>
+            <tr>
+                <td>Burden:</td>
+                <td th:text="${InformacionGeneral.Burden}"></td>
+            </tr>
+            <tr>
+                <td>Compañía:</td>
+                <td th:text="${InformacionGeneral.Compañia}"></td>
+            </tr>
+            <tr>
+                <td>Planta:</td>
+                <td th:text="${InformacionGeneral.planta}"></td>
+            </tr>
+            <tr>
+                <td>Subestación:</td>
+                <td th:text="${InformacionGeneral.subestacion}"></td>
+            </tr>
+            <tr>
+                <td>Tag:</td>
+                <td th:text="${InformacionGeneral.tag}"></td>
+            </tr>
+            <tr>
+                <td>Fase:</td>
+                <td th:text="${InformacionGeneral.fase}"></td>
+            </tr>
+        </table>
+
+        <div class="section-title">RESULTADOS DE LA PRUEBA</div>
+        <table>
+            <tr>
+                <th>Núcleo</th>
+                <th>R devanados @75°C [Ω]</th>
+                <th>Relación de Corriente</th>
+                <th>Polaridad</th>
+                <th>Eval. General</th>
+            </tr>
+            <tr>
+                <td th:text="${resultados.nucleo}"></td>
+                <td th:text="${#numbers.formatDecimal(resultados.R_devanados, 1, 3)}"></td>
+                <td th:text="${resultados.relacionCorriente}"></td>
+                <td th:text="${resultados.poplaridad}"></td>
+                <td th:text="${resultados.EvalGeneral}"></td>
+            </tr>
+        </table>
+
+        <div class="container">
+            <div class="section-title">ERROR DE RELACIÓN DE CORRIENTE [%]</div>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Burden [VA / cos(φ)]</th>
+                        <th th:each="headerVal : ${tablaRelacionCorrienteNominalHeader}" th:text="${headerVal} + '%'">
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:each="row, iterStat : ${tablaRelacionCorrienteNominalData}">
+                        <td th:text="${burdenLabelsRC[iterStat.index]}"></td>
+                        <td th:each="value : ${row}" th:text="${#numbers.formatDecimal(value, 1, 4)}"></td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <div class="section-title">DESPLAZAMIENTO DE FASE [min]</div>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Burden [VA / cos(φ)]</th>
+                        <th th:each="headerVal : ${tablaCorrienteNominalHeader}" th:text="${headerVal} + '%'"></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:each="row, iterStat : ${tablaCorrienteNominalData}">
+                        <td th:text="${burdenLabelsCN[iterStat.index]}"></td>
+                        <td th:each="value : ${row}" th:text="${#numbers.formatDecimal(value, 1, 4)}"></td>
+                    </tr>
+                </tbody>
+            </table>
+
+        </div>
+        <div class="section-title">GRÁFICOS</div>
+
+        <div class="chart-container">
+            <canvas id="graficaCNChart"></canvas>
+        </div>
+        <div class="chart-container">
+            <canvas id="graficaRCNChart"></canvas>
+        </div>
+
+        <div class="section-title">EXCITACIÓN</div>
+        <table>
+            <tr>
+                <td>Norma:</td>
+                <td th:text="${ResultadoExitacion.norma}"></td>
+            </tr>
+            <tr>
+                <td>V_Saturacion:</td>
+                <td th:text="${#numbers.formatDecimal(ResultadoExitacion.V_Saturacion, 1, 3)}"></td>
+            </tr>
+            <tr>
+                <td>I_magnet:</td>
+                <td th:text="${#numbers.formatDecimal(ResultadoExitacion.I_magnet, 1, 6)}"></td>
+            </tr>
+            <tr>
+                <td>ALF:</td>
+                <td th:text="${ResultadoExitacion.ALF}"></td>
+            </tr>
+            <tr>
+                <td>ALFi:</td>
+                <td th:text="${ResultadoExitacion.ALFi}"></td>
+            </tr>
+            <tr>
+                <td>eci:</td>
+                <td th:text="${ResultadoExitacion.eci}"></td>
+            </tr>
+            <tr>
+                <td>Criterio:</td>
+                <td th:text="${ResultadoExitacion.Cirterio}"></td>
+            </tr>
+            <tr>
+                <td>Evaluación:</td>
+                <td th:text="${ResultadoExitacion.evaluacion}"></td>
+            </tr>
+        </table>
+
+         <div class="chart-container">
+            <canvas id="graficaExiChart"></canvas>
+        </div>
+
+        <div class="section-title">CONCLUSIONES</div>
+        <div class="conclusion-management-area">
+            <textarea id="currentConclusionInput" placeholder="Escribe una nueva conclusión aquí..."
+                style="width: 100%; height: 80px; border: 1px solid #ccc; padding: 10px; box-sizing: border-box; margin-bottom: 10px;"></textarea>
+            <button type="button" id="addConclusionButton"
+                style="padding: 10px 20px; background-color: #007bff; color: white; border: none; cursor: pointer;">Añadir
+                Conclusión</button>
+
+            <div id="conclusionsListDisplay"
+                style="margin-top: 20px; border: 1px dashed #eee; padding: 10px; background-color: #f9f9f9;">
+                <h3>Conclusiones del Informe:</h3>
+                <ul id="finalConclusionsList">
+                </ul>
+            </div>
+        </div>
+    </div>
 </body>
 
 </html>
