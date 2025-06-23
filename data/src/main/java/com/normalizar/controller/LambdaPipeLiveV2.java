@@ -93,7 +93,7 @@ public class LambdaPipeLiveV2 implements RequestStreamHandler {
             Map<String, Object> allChartData = objectMapper.readValue(jsonResult, Map.class);
             GraficaData graficaCNData = objectMapper.convertValue(allChartData.get("GraficaCN"), GraficaData.class);
             GraficaData graficaRCNData = objectMapper.convertValue(allChartData.get("GraficaRCN"), GraficaData.class);
-            GraficaDataExi graficaDataExi = objectMapper.convertValue(allChartData.get("Exitacion"),
+            GraficaDataExi graficaDataExi = objectMapper.convertValue(allChartData.get("GraficaExitacion"),
                     GraficaDataExi.class);
             // Llamada s3
 
@@ -158,10 +158,11 @@ public class LambdaPipeLiveV2 implements RequestStreamHandler {
             Map<String, Object> modelo = imappingUseCase.mapJsonToThymeleafModel(jsonResult, report);
 
             String template = itemplateCase.selectTemplate(activo);
+            System.out.println(activo);
             // lo que debemos hacer creo yo es cambiar el proceso de este fragmento para
             // arriba
             String html = ThymeleaRenderTeamplate.render(template, modelo);
-
+            System.out.println("Estos son los objetos que esta tomando para graficar : " + template +"\ny el modelo" +modelo);
             ResponseReport reponseBody = new ResponseReport(metaDataReportDTO.getReport_id(), html, graficaCNData,
                     graficaRCNData, graficaDataExi);
 
