@@ -1,6 +1,6 @@
 package com.normalizar.controller;
 
-import java.io.ByteArrayOutputStream;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -13,10 +13,6 @@ import java.util.Base64;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.jsoup.Jsoup;
-import org.jsoup.nodes.Document;
-import org.xhtmlrenderer.layout.SharedContext;
-import org.xhtmlrenderer.pdf.ITextRenderer;
 
 import com.amazonaws.services.lambda.runtime.Context;
 import com.amazonaws.services.lambda.runtime.RequestStreamHandler;
@@ -26,20 +22,25 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.normalizar.domain.PdfRenderRequest;
 
 import com.normalizar.domain.ResponseObjetoFinal;
-
+import com.normalizar.templateMemori.ImpleCaseMemory;
+import com.normalizar.templateMemori.ItemplateCase;
 
 import software.amazon.awssdk.services.dynamodb.DynamoDbClient;
 import software.amazon.awssdk.services.dynamodb.model.AttributeValue;
 import software.amazon.awssdk.services.dynamodb.model.UpdateItemRequest;
 
+
+
 public class RenderPdfLambda implements RequestStreamHandler {
 
     private static final ObjectMapper objectMapper = new ObjectMapper();
     private final HttpClient httpClient = HttpClient.newHttpClient();
+    private ItemplateCase itemplateCase;
     private final DynamoDbClient dbClient;
 
     public RenderPdfLambda() {
         this.dbClient = DynamoDbClient.create();
+        this.itemplateCase = new ImpleCaseMemory();
     }
 
     @Override
@@ -48,8 +49,6 @@ public class RenderPdfLambda implements RequestStreamHandler {
             APIGatewayV2HTTPEvent event = objectMapper.readValue(input, APIGatewayV2HTTPEvent.class);
             PdfRenderRequest pdfRenderRequest = objectMapper.readValue(event.getBody(), PdfRenderRequest.class);
             String encodedArchivoHtml = pdfRenderRequest.getArchivoHtml();
-            
-
             String tenant_id = pdfRenderRequest.getTenant_id();
             String poolUserId = pdfRenderRequest.getPoolUserId();
             String report_id = pdfRenderRequest.getReport_id();
@@ -57,28 +56,15 @@ public class RenderPdfLambda implements RequestStreamHandler {
 
             // ========= CREACION DE ARCHIVO EN MEMORIA =============
 
-            ByteArrayOutputStream pdfOutputStream = new ByteArrayOutputStream();
-            String decodedArchivoHtml = new String(Base64.getDecoder().decode(encodedArchivoHtml), StandardCharsets.UTF_8);
+            String decodedArchivoHtml = new String(Base64.getDecoder().decode(encodedArchivoHtml),
+                    StandardCharsets.UTF_8);
 
-
-            Document doc = Jsoup.parse(decodedArchivoHtml, "UTF-8");
-            doc.outputSettings().syntax(Document.OutputSettings.Syntax.xml);
-            String cleanHtml = doc.html();
-            ITextRenderer renderer = new ITextRenderer();
-            renderer.setDocumentFromString(cleanHtml);
-            SharedContext cntxt = renderer.getSharedContext();
-            cntxt.setPrint(true);
-            cntxt.setInteractive(false);
+            // =============================== ENCODE HTML EN BASE64 PARA ENVIO DEL ARCHIVO EN BASE S3 ===============================
             
-            renderer.layout();
-            renderer.createPDF(pdfOutputStream);
-
-             // ============= ENCODE HTML EN BASE64 ====================
-
-            byte[] pdfBytes = pdfOutputStream.toByteArray();
+            // Uso de implementacion para renderizacion del pdf
+            byte[] pdfBytes = this.itemplateCase.createPDFComponent(decodedArchivoHtml);
+            System.out.println("===============================  PDF generado Log ===============================");
             String base64EncodedPdf = Base64.getEncoder().encodeToString(pdfBytes);
-
-            
 
             // =========== LLAMAR LAMBDA S3 ====================
             String fileNamePDF = fileName + ".pdf";
@@ -104,7 +90,7 @@ public class RenderPdfLambda implements RequestStreamHandler {
             }
 
             // ========== ACTUALIZAR EL PATH EN DYNAMODB ========================
-           
+
             String pathS3 = tenant_id + "/" + poolUserId + "/report/" + fileNamePDF;
             UpdateItemRequest updateItemRequest = UpdateItemRequest.builder()
                     .tableName("tablaReports")
