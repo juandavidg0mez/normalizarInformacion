@@ -1,21 +1,23 @@
 package com.normalizar.templateMemori;
 
-import java.awt.image.BufferedImage;
-import java.io.ByteArrayInputStream;
+
 import java.util.Base64;
 
-import javax.imageio.ImageIO;
-
 import org.w3c.dom.Element;
-import org.xhtmlrenderer.extend.FSImage;
+
 import org.xhtmlrenderer.extend.ReplacedElement;
 import org.xhtmlrenderer.extend.ReplacedElementFactory;
 import org.xhtmlrenderer.extend.UserAgentCallback;
 import org.xhtmlrenderer.layout.LayoutContext;
+import org.xhtmlrenderer.pdf.ITextFSImage;
 import org.xhtmlrenderer.pdf.ITextImageElement;
 import org.xhtmlrenderer.render.BlockBox;
+
 import org.xhtmlrenderer.simple.extend.FormSubmissionListener;
-import org.xhtmlrenderer.swing.AWTFSImage;
+
+
+import com.lowagie.text.Image;
+
 
 public class B64ImageReplacedElementFactory implements ReplacedElementFactory {
 
@@ -26,21 +28,24 @@ public class B64ImageReplacedElementFactory implements ReplacedElementFactory {
          String url = box.getElement().getAttribute("src");
             if (url != null && url.startsWith("data:image")) {
 
-                String base64Data = url.substring(url.indexOf(",") + 1);
-                byte[] imageBytes = Base64.getDecoder().decode(base64Data);
+            // Extraer los datos Base64
+            String base64Data = url.substring(url.indexOf(",") + 1);
 
-                // Crear un ByteArrayInputStream para la imagen
-                ByteArrayInputStream inputStream = new ByteArrayInputStream(imageBytes);
-                 BufferedImage bufferedImage = ImageIO.read(inputStream);
+            // Decodificar los datos Base64 y crear una imagen
+            byte[] imageBytes = Base64.getDecoder().decode(base64Data);
+            Image image = Image.getInstance(imageBytes);
 
-                if (bufferedImage == null) {
-                    throw new IllegalArgumentException("No se pudo leer la imagen desde los datos Base64.");
-                }
-                FSImage fsImage = AWTFSImage.createImage(bufferedImage);
+            // Crear un ITextFSImage desde la imagen
+            ITextFSImage fsImage = new ITextFSImage(image);
 
-                // Crear un elemento reemplazado para la imagen
-                 return new ITextImageElement(fsImage);
+            // Escalar la imagen según los tamaños CSS
+            if (cssWidth > 0 && cssHeight > 0) {
+                fsImage.scale(cssWidth, cssHeight);
             }
+
+            // Crear un elemento reemplazado directamente para la imagen
+            return new ITextImageElement(fsImage);
+        }
        } catch (Exception e) {
          e.printStackTrace();
        }

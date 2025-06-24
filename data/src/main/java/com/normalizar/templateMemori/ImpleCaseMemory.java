@@ -1,8 +1,7 @@
 package com.normalizar.templateMemori;
 
 import java.io.ByteArrayOutputStream;
-import java.io.FileNotFoundException;
-import java.net.URL;
+
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -49,6 +48,10 @@ public class ImpleCaseMemory implements ItemplateCase {
 
             try (ByteArrayOutputStream pdfOutputStream = new ByteArrayOutputStream()) {
                 Document doc = Jsoup.parse(htmlComponeent, "UTF-8");
+                if (!htmlComponeent.contains("id=\"Report_PDF_Component\"")) {
+                    throw new IllegalArgumentException("El HTML no contiene la sección 'Report_PDF_Component'.");
+                }
+                doc.outputSettings().syntax(Document.OutputSettings.Syntax.xml);
                 Element componentSecction = doc.getElementById("Report_PDF_Component");
 
                 if (componentSecction == null) {
@@ -59,20 +62,20 @@ public class ImpleCaseMemory implements ItemplateCase {
                 String cleanHtml = componentSecction.outerHtml(); // Obtiene el HTML completo de la sección
                 logger.info("Retorno de componente especifico normalizado: {}", cleanHtml);
 
-                URL cssUrl = getClass().getClassLoader().getResource("data/src/main/resources/templates/generalStyle.css");
-                if (cssUrl == null) {
-                    throw new FileNotFoundException("No se encontró el archivo CSS: templates/generalStyle.css");
-                }
-                String cssPath = cssUrl.toExternalForm();
-                logger.info("Usando archivo CSS: {}", cssPath);
+                // URL cssUrl = getClass().getClassLoader().getResource("templates/generalStyle.css");
+
+                // if (cssUrl == null) {
+                //     throw new FileNotFoundException("No se encontró el archivo CSS: templates/generalStyle.css");
+                // }
+                // String cssPath = cssUrl.toExternalForm();
+                // logger.info("Usando archivo CSS: {}", cssPath);
 
                 ITextRenderer renderer = new ITextRenderer();
-                renderer.setDocumentFromString(cleanHtml, cssPath);
-                
+                renderer.setDocumentFromString(cleanHtml);
+       
                 SharedContext cntxt = renderer.getSharedContext();
                 cntxt.setPrint(true);
                 cntxt.setInteractive(false);
-                
                 // Soporte para renderizacion de imagenes en base64
                 renderer.getSharedContext().setReplacedElementFactory(new B64ImageReplacedElementFactory());
                 renderer.layout();
