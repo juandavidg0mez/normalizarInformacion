@@ -61,7 +61,7 @@ public class RenderPdfLambda implements RequestStreamHandler {
 
                         // =============================== ENCODE HTML EN BASE64 PARA ENVIO DEL ARCHIVO
                         // EN BASE S3 ===============================
-
+                        System.out.println("Estructura enviada : " + decodedArchivoHtml);      
                         // Uso de implementacion para renderizacion del pdf
                         byte[] pdfBytes = this.itemplateCase.createPDFComponent(decodedArchivoHtml);
                         System.out.println(

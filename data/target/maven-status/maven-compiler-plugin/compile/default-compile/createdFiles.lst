@@ -1,13 +1,10 @@
 com\normalizar\domain\Report.class
 com\normalizar\repositoryDynamoDB\entity\MetaDataReport.class
-com\normalizar\templateMemori\ImpleCaseMemory.class
 com\normalizar\repositoryDynamoDB\IuseCaseDynamoDB.class
 com\normalizar\utility\ImageUtils.class
 com\normalizar\domain\GraficaDataExi.class
 com\normalizar\domain\ResponseObjetoFinal.class
-com\normalizar\controller\RenderPdfLambda.class
 com\normalizar\domain\GraficaData.class
-com\normalizar\controller\LambdaPipeLiveV2.class
 com\normalizar\Main.class
 com\normalizar\controller\UpdateConlusionsLambda.class
 com\normalizar\repositoryDynamoDB\ImplUseCaseDynamoDB.class
