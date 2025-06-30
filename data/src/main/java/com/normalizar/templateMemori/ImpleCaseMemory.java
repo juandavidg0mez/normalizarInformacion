@@ -60,7 +60,7 @@ public class ImpleCaseMemory implements ItemplateCase {
                     throw new IllegalArgumentException("No se encontró la sección específica en el HTML.");
                 }
 
-                URL cssUrl = getClass().getClassLoader().getResource("templates/generalStyle.css");
+                URL cssUrl = getClass().getClassLoader().getResource("templates/css/generalStyle.css");
                 if (cssUrl == null) {
                     throw new FileNotFoundException("No se encontró el archivo CSS.");
                 }
@@ -73,7 +73,8 @@ public class ImpleCaseMemory implements ItemplateCase {
                         "</body></html>";
 
                 logger.info("Retorno de componente especifico normalizado: {}", completeHtml);
-                System.out.println("============================= Log Dod Enviado de lambda Render =========================");
+                System.out.println(
+                        "============================= Log Dod Enviado de lambda Render =========================");
                 System.out.println(completeHtml);
 
                 ITextRenderer renderer = new ITextRenderer();

@@ -73,7 +73,7 @@ public class ImplMappingUseCase implements ImappingUseCase {
             // Seccion de encabezado
             Map<String, String> headerData = new HashMap<>();
             headerData.put("protocolo", infoGeneral.get("norma") + "-PROT"); // Example
-            headerData.put("hoja", "1 de X"); // Dynamic later?
+            headerData.put("hoja", "1 de 2"); // Dynamic later?
             headerData.put("codigo", report.getActivo() + "-CODE"); // Example
             headerData.put("ciudad", "Bucaramanga"); // Static for now
             headerData.put("fecha",
