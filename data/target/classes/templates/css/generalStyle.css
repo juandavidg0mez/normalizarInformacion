@@ -1,0 +1,89 @@
+
+.page-break {
+    page-break-before: always;
+}
+
+/* Esto altera las dimenciones del reporte al momento de enviarlo como descarga mucho cuidado */
+.a4-page {
+    width: 190mm; /* Aprovechas más del ancho */
+    min-height: 257mm;
+    padding: 5mm 10mm;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+@page {
+    size: A4;
+    margin: 10mm;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 15px;
+}
+
+th,
+td {
+    border: 1px solid black;
+    padding: 1px 3px;
+    text-align: left;
+    vertical-align: top;
+}
+
+th {
+    background-color: #ffffff;
+    text-align: center;
+    font-weight: bold;
+
+}
+
+.header-table td {
+    border: none;
+    padding: 2px 5px;
+}
+
+.section-title {
+    background-color: #00076d;
+    text-align: center;
+    color: white;
+    font-weight: bold;
+    padding: 7px;
+    margin-top: 15px;
+    margin-bottom: 5px;
+}
+
+.logo {
+    width: 80px;
+    height: auto;
+    float: left;
+    margin-right: 10px;
+}
+
+.clear {
+    clear: both;
+}
+
+.text-center {
+    padding-top: 3%;
+    text-align: center;
+    font-weight: bold;
+}
+
+.box {
+    border: 1px solid black;
+    padding: 5px;
+}
+
+.imClass {
+    padding: auto;
+    padding-top: 6%;
+}
+
+.forTable {
+    font-weight: bold;
+}
+
+.textTableCenter {
+    text-align: center;
+}

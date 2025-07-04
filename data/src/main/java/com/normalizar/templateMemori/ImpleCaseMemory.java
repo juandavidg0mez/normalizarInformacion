@@ -1,7 +1,8 @@
 package com.normalizar.templateMemori;
 
 import java.io.ByteArrayOutputStream;
-
+import java.io.FileNotFoundException;
+import java.net.URL;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -59,20 +60,26 @@ public class ImpleCaseMemory implements ItemplateCase {
                     throw new IllegalArgumentException("No se encontró la sección específica en el HTML.");
                 }
 
-                String cleanHtml = componentSecction.outerHtml(); // Obtiene el HTML completo de la sección
-                logger.info("Retorno de componente especifico normalizado: {}", cleanHtml);
+                URL cssUrl = getClass().getClassLoader().getResource("templates/css/generalStyle.css");
+                if (cssUrl == null) {
+                    throw new FileNotFoundException("No se encontró el archivo CSS.");
+                }
+                String cssLink = "<link rel='stylesheet' type='text/css' href='" + cssUrl.toExternalForm() + "' />";
 
-                // URL cssUrl = getClass().getClassLoader().getResource("templates/generalStyle.css");
+                String completeHtml = "<!DOCTYPE html><html><head><meta charset='UTF-8'/>" +
+                        cssLink +
+                        "</head><body>" +
+                        componentSecction.outerHtml() +
+                        "</body></html>";
 
-                // if (cssUrl == null) {
-                //     throw new FileNotFoundException("No se encontró el archivo CSS: templates/generalStyle.css");
-                // }
-                // String cssPath = cssUrl.toExternalForm();
-                // logger.info("Usando archivo CSS: {}", cssPath);
+                logger.info("Retorno de componente especifico normalizado: {}", completeHtml);
+                System.out.println(
+                        "============================= Log Dod Enviado de lambda Render =========================");
+                System.out.println(completeHtml);
 
                 ITextRenderer renderer = new ITextRenderer();
-                renderer.setDocumentFromString(cleanHtml);
-       
+                renderer.setDocumentFromString(completeHtml);
+
                 SharedContext cntxt = renderer.getSharedContext();
                 cntxt.setPrint(true);
                 cntxt.setInteractive(false);
