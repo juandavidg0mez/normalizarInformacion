@@ -66,7 +66,7 @@ public class LambdaPipeLiveV2 implements RequestStreamHandler {
             String archivoToFront = report.getArchivoToFront();
 
             // Payload para lambda "Normalizar"
-            Map<String, String> payloadInterno = Map.of("file", archivoToFront);
+            Map<String, String> payloadInterno = Map.of("file", archivoToFront, "activo" , activo);
             // <PajazoMental> y aca podemos scarlos a una base datos creo yo como un puerto
             // de salida (DB , *dinnamoDB*)
             String jsonInterno = objectMapper.writeValueAsString(payloadInterno);
@@ -86,15 +86,19 @@ public class LambdaPipeLiveV2 implements RequestStreamHandler {
 
             // Repuesta de la lambda de normalizacion captado El body
             String jsonResult = httpResponse.body();
-            System.out.println("Este es el resultado real o crudo de la lambda normalizar" + jsonResult);
-            // Logs
+            Map<String, Object> lambdaResponseMap = objectMapper.readValue(jsonResult, Map.class);
+            String base64Body = (String) lambdaResponseMap.get("body");
+            byte[] decodedBytes = Base64.getDecoder().decode(base64Body);
+            String decodedJson = new String(decodedBytes, StandardCharsets.UTF_8);
+
             System.out.println("Respuesta del servicio de normalización:");
-            System.out.println(jsonResult);
-            Map<String, Object> allChartData = objectMapper.readValue(jsonResult, Map.class);
+            System.out.println(decodedJson);
+
+            Map<String, Object> allChartData = objectMapper.readValue(decodedJson, Map.class);
             GraficaData graficaCNData = objectMapper.convertValue(allChartData.get("GraficaCN"), GraficaData.class);
             GraficaData graficaRCNData = objectMapper.convertValue(allChartData.get("GraficaRCN"), GraficaData.class);
-            GraficaDataExi graficaDataExi = objectMapper.convertValue(allChartData.get("GraficaExitacion"),
-                    GraficaDataExi.class);
+            GraficaDataExi graficaDataExi = objectMapper.convertValue(allChartData.get("GraficaExitacion"), GraficaDataExi.class);
+
             // Llamada s3
 
             String fileName = ""; // Nombre sugerido por el front
@@ -107,16 +111,13 @@ public class LambdaPipeLiveV2 implements RequestStreamHandler {
                 }
             }
 
-            String normallizedJsonString = objectMapper.writeValueAsString(jsonResult);
-            String base64EncodedJson = Base64.getEncoder()
-                    .encodeToString(normallizedJsonString.getBytes(StandardCharsets.UTF_8));
 
             // **CORRECCIÓN AQUÍ: Crear un payload que coincida con NewObjectRequest**
             Map<String, String> payloadS3 = new HashMap<>(); // Usar solo String para valores simples
             payloadS3.put("userPoolId", report.getPoolUserId());
             payloadS3.put("tenantName", report.getTenant());
             payloadS3.put("fileName", fileName); // Nombre del archivo directamente
-            payloadS3.put("fileBase64", base64EncodedJson); // Contenido Base64 directamente
+            payloadS3.put("fileBase64", base64Body); // Contenido Base64 directamente
 
             String jsonInternoS3 = objectMapper.writeValueAsString(payloadS3);
 
