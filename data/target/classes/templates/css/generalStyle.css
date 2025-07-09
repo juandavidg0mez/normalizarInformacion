@@ -1,8 +1,7 @@
+/* A4 Page layout */
 .a4-page {
     width: 190mm;
-    /* 210mm - 40mm padding */
     min-height: 257mm;
-    /* 297mm - 40mm padding */
     padding: 10mm;
     margin: auto;
     background: rgb(255, 255, 255);
@@ -16,27 +15,31 @@
     margin: 5mm;
 }
 
-table {
+/* Table styles */
+.table-style {
     width: 100%;
     border-collapse: collapse;
     margin-bottom: 15px;
-
 }
 
-th,
-td {
+.th-style {
     border: 1px solid black;
-    padding: 1px 5px;
-    vertical-align: top;
-}
-
-th {
     background-color: #ffffff;
     text-align: center;
     font-weight: bold;
-
+    padding: 1px 5px;
+    vertical-align: top;
+    white-space: nowrap;
 }
 
+.td-style {
+    border: 1px solid black;
+    padding: 1px 5px;
+    vertical-align: top;
+    white-space: nowrap;
+}
+
+/* Misc utility styles */
 .header-table td {
     border: none;
     padding: 2px 5px;
@@ -74,25 +77,10 @@ th {
     padding: 5px;
 }
 
-
-
 .forTable {
     font-weight: bold;
 }
 
-.textTableCenter {
-    text-align: center;
-}
-
-table td,
-table th {
-    white-space: nowrap;
-}
-
-col {
-    width: auto;
-}
-
-.page-break{
-    page-break-before:always;
+.page-break {
+    page-break-before: always;
 }

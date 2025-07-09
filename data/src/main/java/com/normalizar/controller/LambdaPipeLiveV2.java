@@ -66,10 +66,12 @@ public class LambdaPipeLiveV2 implements RequestStreamHandler {
             String archivoToFront = report.getArchivoToFront();
 
             // Payload para lambda "Normalizar"
-            Map<String, String> payloadInterno = Map.of("file", archivoToFront, "activo" , activo);
+            Map<String, String> payloadInterno = Map.of("file", archivoToFront, "activo", activo);
             // <PajazoMental> y aca podemos scarlos a una base datos creo yo como un puerto
             // de salida (DB , *dinnamoDB*)
             String jsonInterno = objectMapper.writeValueAsString(payloadInterno);
+            System.out.println("esto se esta enviando a la lambda de python");
+            System.out.println(jsonInterno);
             // Armamos la el requesr y la cargamos con el payload
             HttpRequest request = HttpRequest.newBuilder()
                     .uri(URI.create("https://e989ua8tf9.execute-api.us-east-1.amazonaws.com/dev/inter_normalizar"))
@@ -84,20 +86,23 @@ public class LambdaPipeLiveV2 implements RequestStreamHandler {
                 throw new RuntimeException("Error al invocar el servicio de normalización: " + httpResponse.body());
             }
 
-            // Repuesta de la lambda de normalizacion captado El body
+            // --- Respuesta de la Lambda de normalización ---
             String jsonResult = httpResponse.body();
-            Map<String, Object> lambdaResponseMap = objectMapper.readValue(jsonResult, Map.class);
-            String base64Body = (String) lambdaResponseMap.get("body");
-            byte[] decodedBytes = Base64.getDecoder().decode(base64Body);
-            String decodedJson = new String(decodedBytes, StandardCharsets.UTF_8);
 
-            System.out.println("Respuesta del servicio de normalización:");
-            System.out.println(decodedJson);
+            // Para impresión/debug
+            System.out.println("Respuesta del servicio de normalizacion:");
+            System.out.println(jsonResult);
 
-            Map<String, Object> allChartData = objectMapper.readValue(decodedJson, Map.class);
+            // Subir a S3 en base64 (aquí sí lo conviertes para S3)
+            String fileBase64 = Base64.getEncoder().encodeToString(jsonResult.getBytes(StandardCharsets.UTF_8));
+
+            // Usar el contenido para seguir procesando los datos
+            Map<String, Object> allChartData = objectMapper.readValue(jsonResult, Map.class);
+
             GraficaData graficaCNData = objectMapper.convertValue(allChartData.get("GraficaCN"), GraficaData.class);
             GraficaData graficaRCNData = objectMapper.convertValue(allChartData.get("GraficaRCN"), GraficaData.class);
-            GraficaDataExi graficaDataExi = objectMapper.convertValue(allChartData.get("GraficaExitacion"), GraficaDataExi.class);
+            GraficaDataExi graficaDataExi = objectMapper.convertValue(allChartData.get("GraficaExitacion"),
+                    GraficaDataExi.class);
 
             // Llamada s3
 
@@ -111,13 +116,12 @@ public class LambdaPipeLiveV2 implements RequestStreamHandler {
                 }
             }
 
-
             // **CORRECCIÓN AQUÍ: Crear un payload que coincida con NewObjectRequest**
             Map<String, String> payloadS3 = new HashMap<>(); // Usar solo String para valores simples
             payloadS3.put("userPoolId", report.getPoolUserId());
             payloadS3.put("tenantName", report.getTenant());
             payloadS3.put("fileName", fileName); // Nombre del archivo directamente
-            payloadS3.put("fileBase64", base64Body); // Contenido Base64 directamente
+            payloadS3.put("fileBase64", fileBase64); // Contenido Base64 directamente
 
             String jsonInternoS3 = objectMapper.writeValueAsString(payloadS3);
 
@@ -163,7 +167,8 @@ public class LambdaPipeLiveV2 implements RequestStreamHandler {
             // lo que debemos hacer creo yo es cambiar el proceso de este fragmento para
             // arriba
             String html = ThymeleaRenderTeamplate.render(template, modelo);
-            System.out.println("Estos son los objetos que esta tomando para graficar : " + template +"\ny el modelo" +modelo);
+            System.out.println(
+                    "Estos son los objetos que esta tomando para graficar : " + template + "\ny el modelo" + modelo);
             ResponseReport reponseBody = new ResponseReport(metaDataReportDTO.getReport_id(), html, graficaCNData,
                     graficaRCNData, graficaDataExi);
 
