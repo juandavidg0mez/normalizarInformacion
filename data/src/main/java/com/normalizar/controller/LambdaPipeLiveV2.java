@@ -1,5 +1,6 @@
 package com.normalizar.controller;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -8,7 +9,6 @@ import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.nio.charset.StandardCharsets;
 
-import java.util.Base64;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
@@ -27,6 +27,8 @@ import com.normalizar.domain.ResponseReport;
 import com.normalizar.repositoryDynamoDB.ImplUseCaseDynamoDB;
 import com.normalizar.repositoryDynamoDB.IuseCaseDynamoDB;
 import com.normalizar.repositoryDynamoDB.entity.MetaDataReport;
+import com.normalizar.serviceS3.UseCase.IuseCaseS3Service;
+import com.normalizar.serviceS3.UseCase.impl.ImplUseCaseS3Service;
 import com.normalizar.templateMemori.ImpleCaseMemory;
 import com.normalizar.templateMemori.ItemplateCase;
 import com.normalizar.thymeleaRender.ThymeleaRenderTeamplate;
@@ -44,12 +46,13 @@ public class LambdaPipeLiveV2 implements RequestStreamHandler {
     private IuseCaseDynamoDB iuseCaseDynamoDB;
     private final DynamoDbClient dbClient;
     private ImappingUseCase imappingUseCase;
-
+    private IuseCaseS3Service iuseCaseS3Service;
     public LambdaPipeLiveV2() {
         this.itemplateCase = new ImpleCaseMemory();
         this.dbClient = DynamoDbClient.create();
         this.iuseCaseDynamoDB = new ImplUseCaseDynamoDB();
         this.imappingUseCase = new ImplMappingUseCase();
+        this.iuseCaseS3Service = new ImplUseCaseS3Service();
     }
 
     @Override
@@ -93,19 +96,6 @@ public class LambdaPipeLiveV2 implements RequestStreamHandler {
             System.out.println("Respuesta del servicio de normalizacion:");
             System.out.println(jsonResult);
 
-            // Subir a S3 en base64 (aquí sí lo conviertes para S3)
-            String fileBase64 = Base64.getEncoder().encodeToString(jsonResult.getBytes(StandardCharsets.UTF_8));
-
-            // Usar el contenido para seguir procesando los datos
-            Map<String, Object> allChartData = objectMapper.readValue(jsonResult, Map.class);
-
-            GraficaData graficaCNData = objectMapper.convertValue(allChartData.get("GraficaCN"), GraficaData.class);
-            GraficaData graficaRCNData = objectMapper.convertValue(allChartData.get("GraficaRCN"), GraficaData.class);
-            GraficaDataExi graficaDataExi = objectMapper.convertValue(allChartData.get("GraficaExitacion"),
-                    GraficaDataExi.class);
-
-            // Llamada s3
-
             String fileName = ""; // Nombre sugerido por el front
             if (fileName == null || fileName.isEmpty()) {
                 fileName = "data_normalizada" + UUID.randomUUID().toString() + ".json"; // Generar nombre único si no se
@@ -116,36 +106,27 @@ public class LambdaPipeLiveV2 implements RequestStreamHandler {
                 }
             }
 
-            // **CORRECCIÓN AQUÍ: Crear un payload que coincida con NewObjectRequest**
-            Map<String, String> payloadS3 = new HashMap<>(); // Usar solo String para valores simples
-            payloadS3.put("userPoolId", report.getPoolUserId());
-            payloadS3.put("tenantName", report.getTenant());
-            payloadS3.put("fileName", fileName); // Nombre del archivo directamente
-            payloadS3.put("fileBase64", fileBase64); // Contenido Base64 directamente
+            // Subir a S3 en base64 (aquí sí lo conviertes para S3)
+            byte[] jsonBytes = jsonResult.getBytes(StandardCharsets.UTF_8);
+            InputStream fileMemory = new ByteArrayInputStream(jsonBytes);
+            this.iuseCaseS3Service.uploaFile(poolUserId, tenant, activo, fileMemory, fileName , "application/json");
+            System.out.println("Bloque de codigo subir archivo activado");
 
-            String jsonInternoS3 = objectMapper.writeValueAsString(payloadS3);
+            // Usar el contenido para seguir procesando los datos
+            Map<String, Object> allChartData = objectMapper.readValue(jsonResult, Map.class);
 
-            HttpRequest requestS3 = HttpRequest.newBuilder()
-                    .uri(URI.create("https://e989ua8tf9.execute-api.us-east-1.amazonaws.com/dev/upLoadFile"))
-                    .header("Content-Type", "application/json")
-                    .POST(HttpRequest.BodyPublishers.ofString(jsonInternoS3))
-                    .build();
-
-            HttpResponse<String> httpResponseS3 = httpClient.send(requestS3, HttpResponse.BodyHandlers.ofString());
-
-            // Verifica el código de estado HTTP
-            if (httpResponseS3.statusCode() != 200) {
-                throw new RuntimeException("Error al invocar el servicio de S3: " + httpResponseS3.body());
-            }
+            GraficaData graficaCNData = objectMapper.convertValue(allChartData.get("GraficaCN"), GraficaData.class);
+            GraficaData graficaRCNData = objectMapper.convertValue(allChartData.get("GraficaRCN"), GraficaData.class);
+            GraficaDataExi graficaDataExi = objectMapper.convertValue(allChartData.get("GraficaExitacion"),
+                    GraficaDataExi.class);
 
             // DynamoDB
             String report_id = UUID.randomUUID().toString();
             String timestamp = Instant.now().toString();
 
             // Create metaDataReport
-
             MetaDataReport metaDataReportDTO = new MetaDataReport();
-            String pathJsonS3 = tenant + "/" + poolUserId + "/reports/" + fileName;
+            String pathJsonS3 = tenant + "/" + poolUserId + "/reports/" + activo + "/" + fileName;
             metaDataReportDTO.setActivo(activo);
             metaDataReportDTO.setTenant_id(tenant);
             metaDataReportDTO.setPoolUserId(poolUserId);

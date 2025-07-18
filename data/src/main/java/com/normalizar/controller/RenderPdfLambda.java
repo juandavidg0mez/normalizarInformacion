@@ -1,12 +1,9 @@
 package com.normalizar.controller;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.net.URI;
-import java.net.http.HttpClient;
-import java.net.http.HttpRequest;
-import java.net.http.HttpResponse;
 import java.nio.charset.StandardCharsets;
 import java.util.Base64;
 import java.util.HashMap;
@@ -20,6 +17,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.normalizar.domain.PdfRenderRequest;
 
 import com.normalizar.domain.ResponseObjetoFinal;
+import com.normalizar.serviceS3.UseCase.IuseCaseS3Service;
+import com.normalizar.serviceS3.UseCase.impl.ImplUseCaseS3Service;
 import com.normalizar.templateMemori.ImpleCaseMemory;
 import com.normalizar.templateMemori.ItemplateCase;
 
@@ -33,13 +32,14 @@ import org.slf4j.LoggerFactory;
 public class RenderPdfLambda implements RequestStreamHandler {
         private static final Logger logger = LoggerFactory.getLogger(RenderPdfLambda.class);
         private static final ObjectMapper objectMapper = new ObjectMapper();
-        private final HttpClient httpClient = HttpClient.newHttpClient();
         private ItemplateCase itemplateCase;
         private final DynamoDbClient dbClient;
+        private IuseCaseS3Service iuseCaseS3Service;
 
         public RenderPdfLambda() {
                 this.dbClient = DynamoDbClient.create();
                 this.itemplateCase = new ImpleCaseMemory();
+                this.iuseCaseS3Service = new ImplUseCaseS3Service();
         }
 
         @Override
@@ -53,6 +53,7 @@ public class RenderPdfLambda implements RequestStreamHandler {
                         String poolUserId = pdfRenderRequest.getPoolUserId();
                         String report_id = pdfRenderRequest.getReport_id();
                         String fileName = pdfRenderRequest.getFileName();
+                        String activo = pdfRenderRequest.getActivo();
 
                         // ========= CREACION DE ARCHIVO EN MEMORIA =============
 
@@ -68,38 +69,14 @@ public class RenderPdfLambda implements RequestStreamHandler {
                                         "===============================  PDF generado Log ===============================");
                         logger.info("HTML decodificado: {}", decodedArchivoHtml);
                         logger.info("PDF generado con tamaño: {} bytes", pdfBytes.length);
-
-                        String base64EncodedPdf = Base64.getEncoder().encodeToString(pdfBytes);
-                        logger.info("PDF codificado en Base64: {}", base64EncodedPdf.substring(0, 50) + "...");
-
-                        // =========== LLAMAR LAMBDA S3 ====================
                         String fileNamePDF = fileName + ".pdf";
-                        Map<String, String> payloadS3 = new HashMap<>(); // Usar solo String para valores simples
-                        payloadS3.put("userPoolId", poolUserId);
-                        payloadS3.put("tenantName", tenant_id);
-                        payloadS3.put("fileName", fileNamePDF); // Nombre del archivo directamente
-                        payloadS3.put("fileBase64", base64EncodedPdf); // Contenido Base64 directamente
-
-                        String pdS3File = objectMapper.writeValueAsString(payloadS3);
-
-                        HttpRequest requestS3 = HttpRequest.newBuilder()
-                                        .uri(URI.create("https://e989ua8tf9.execute-api.us-east-1.amazonaws.com/dev/upLoadFile"))
-                                        .header("Content-Type", "application/json")
-                                        .POST(HttpRequest.BodyPublishers.ofString(pdS3File))
-                                        .build();
-
-                        HttpResponse<String> httpResponseS3 = httpClient.send(requestS3,
-                                        HttpResponse.BodyHandlers.ofString());
-
-                        // Verifica el código de estado HTTP
-                        if (httpResponseS3.statusCode() != 200) {
-                                throw new RuntimeException(
-                                                "Error al invocar el servicio de S3: " + httpResponseS3.body());
-                        }
+                        InputStream fileMemory = new ByteArrayInputStream(pdfBytes);
+                        this.iuseCaseS3Service.uploaFile(poolUserId, tenant_id, activo, fileMemory, fileName , "application/pdf");
+                        System.out.println("Bloque de codigo subir archivo activado");
 
                         // ========== ACTUALIZAR EL PATH EN DYNAMODB ========================
 
-                        String pathS3 = tenant_id + "/" + poolUserId + "/report/" + fileNamePDF;
+                        String pathS3 = tenant_id + "/" + poolUserId + "/report/" + activo+ "/" + fileNamePDF;
                         UpdateItemRequest updateItemRequest = UpdateItemRequest.builder()
                                         .tableName("tablaReports")
                                         .key(Map.of(
