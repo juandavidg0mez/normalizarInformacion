@@ -4,6 +4,7 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.lang.reflect.Type;
 import java.net.URI;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
@@ -47,6 +48,7 @@ public class LambdaPipeLiveV2 implements RequestStreamHandler {
     private final DynamoDbClient dbClient;
     private ImappingUseCase imappingUseCase;
     private IuseCaseS3Service iuseCaseS3Service;
+
     public LambdaPipeLiveV2() {
         this.itemplateCase = new ImpleCaseMemory();
         this.dbClient = DynamoDbClient.create();
@@ -96,6 +98,13 @@ public class LambdaPipeLiveV2 implements RequestStreamHandler {
             System.out.println("Respuesta del servicio de normalizacion:");
             System.out.println(jsonResult);
 
+            try {
+                objectMapper.readValue(jsonResult, Object.class);
+                System.out.println("El JSON es válido.");
+            } catch (Exception e) {
+                throw new IllegalArgumentException("El JSON no es válido: " + e.getMessage());
+            }
+
             String fileName = ""; // Nombre sugerido por el front
             if (fileName == null || fileName.isEmpty()) {
                 fileName = "data_normalizada" + UUID.randomUUID().toString() + ".json"; // Generar nombre único si no se
@@ -105,11 +114,13 @@ public class LambdaPipeLiveV2 implements RequestStreamHandler {
                     fileName += ".json";
                 }
             }
-
+            System.out.println("Este json es de tipo: " + ((Object) jsonResult).getClass().getName());
+            System.out.println(fileName);
             // Subir a S3 en base64 (aquí sí lo conviertes para S3)
             byte[] jsonBytes = jsonResult.getBytes(StandardCharsets.UTF_8);
             InputStream fileMemory = new ByteArrayInputStream(jsonBytes);
-            this.iuseCaseS3Service.uploaFile(poolUserId, tenant, activo, fileMemory, fileName , "application/json");
+
+            this.iuseCaseS3Service.uploaFile(poolUserId, tenant, activo, fileMemory, fileName, "application/json");
             System.out.println("Bloque de codigo subir archivo activado");
 
             // Usar el contenido para seguir procesando los datos
@@ -145,9 +156,13 @@ public class LambdaPipeLiveV2 implements RequestStreamHandler {
 
             String template = itemplateCase.selectTemplate(activo);
             System.out.println(activo);
-            // lo que debemos hacer creo yo es cambiar el proceso de este fragmento para
-            // arriba
+
             String html = ThymeleaRenderTeamplate.render(template, modelo);
+            byte[] byteHtml = html.getBytes(StandardCharsets.UTF_8);
+            InputStream archivoHtml = new ByteArrayInputStream(byteHtml);
+            String htmlFileName = "data_normalizada" + UUID.randomUUID().toString() + ".html"; 
+            this.iuseCaseS3Service.uploaFile(poolUserId, tenant, activo, archivoHtml, htmlFileName, "text/html");
+            
             System.out.println(
                     "Estos son los objetos que esta tomando para graficar : " + template + "\ny el modelo" + modelo);
             ResponseReport reponseBody = new ResponseReport(metaDataReportDTO.getReport_id(), html, graficaCNData,

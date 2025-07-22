@@ -71,7 +71,7 @@ public class ImpleCaseMemory implements ItemplateCase {
                         "</head><body>" +
                         componentSecction.outerHtml() +
                         "</body></html>";
-
+                
                 logger.info("Retorno de componente especifico normalizado: {}", completeHtml);
                 System.out.println(
                         "============================= Log Dod Enviado de lambda Render =========================");

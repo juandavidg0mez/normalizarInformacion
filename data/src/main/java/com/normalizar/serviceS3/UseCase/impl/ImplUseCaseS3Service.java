@@ -24,18 +24,17 @@ public class ImplUseCaseS3Service implements IuseCaseS3Service {
             // String nombrePdf = nameFile.replaceAll(".xls", ".pdf");
             String keyS3 = tennatName + "/" + userPoolId + "/reports/"+ activo + "/" + nameFile;
             // Crear solicitud para subir el objeto
-            byte[] fileBytes = file.readAllBytes();
             PutObjectRequest putObjectRequest = PutObjectRequest.builder()
                     .bucket("my-spring-bucket-eligomez")
                     .key(keyS3)
                     .contentType(contenType)
                     .build();
 
-            s3Client.putObject(putObjectRequest, RequestBody.fromBytes(fileBytes));
+            s3Client.putObject(putObjectRequest, RequestBody.fromInputStream(file, file.available()));
 
             return "Se ha subido el archivo de forma correcta";
         } catch (Exception e) {
-            throw new RuntimeException("Error al generar el PDF desde Excel", e);
+            throw new RuntimeException("Error al subir el archivo normalizado Json a S3", e);
         }
     }
     
