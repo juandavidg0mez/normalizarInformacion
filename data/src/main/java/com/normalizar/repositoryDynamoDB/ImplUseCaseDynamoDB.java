@@ -32,14 +32,21 @@ public class ImplUseCaseDynamoDB implements IuseCaseDynamoDB {
         try {
 
             Map<String, AttributeValue> item = new HashMap<>();
-            item.put("tenant_id", AttributeValue.builder().s(metaDataReport.getTenant_id()).build());
-            item.put("report_id", AttributeValue.builder().s(metaDataReport.getReport_id()).build());
-            item.put("activo", AttributeValue.builder().s(metaDataReport.getActivo()).build());
-            item.put("poolUserId", AttributeValue.builder().s(metaDataReport.getPoolUserId()).build());
-            item.put("s3_json_path", AttributeValue.builder().s(metaDataReport.getS3JsonPath()).build());
-            item.put("s3_pdf_path", AttributeValue.builder().s(metaDataReport.getS3PdfPath()).build());
-            item.put("fecha_creacion", AttributeValue.builder().s(metaDataReport.getTimestamp()).build());
-            item.put("estado", AttributeValue.builder().s(metaDataReport.getEstado()).build());
+            addAttributeIfNotNull(item, "tenant_id", metaDataReport.getTenantId());
+            addAttributeIfNotNull(item, "job_id", metaDataReport.getJobId());
+            addAttributeIfNotNull(item, "activo", metaDataReport.getActivo());
+            addAttributeIfNotNull(item, "pool_user_id", metaDataReport.getPoolUserId());
+            addAttributeIfNotNull(item, "s3_json_path", metaDataReport.getS3JsonPath());
+            addAttributeIfNotNull(item, "s3_pdf_path", metaDataReport.getS3PdfPath());
+            addAttributeIfNotNull(item, "s3_zip_path", metaDataReport.getS3ZipPath());
+            addAttributeIfNotNull(item, "s3_final_pdf_path", metaDataReport.getS3FinalPdfReport());
+            addAttributeIfNotNull(item, "s3_final_zip_path", metaDataReport.getS3ZipFileFinalReport());
+            addAttributeIfNotNull(item, "fecha_creacion", metaDataReport.getTimestamp());
+            addAttributeIfNotNull(item, "estado", metaDataReport.getEstado());
+
+            if (!item.containsKey("tenant_id")|| !item.containsKey("job_id")) {
+                throw new IllegalArgumentException("la clave de particion 'tenant_id' y 'job_id' no pueden ser nuls");
+            }
 
             PutItemRequest putItemRequest = PutItemRequest.builder()
                     .tableName(tableName)
@@ -48,10 +55,10 @@ public class ImplUseCaseDynamoDB implements IuseCaseDynamoDB {
 
             client.putItem(putItemRequest);
             System.out.println("Metadatos del reporte guardados exitosamente para tenant: "
-                    + metaDataReport.getTenant_id() + ", reporteId: " + metaDataReport.getReport_id());
+                    + metaDataReport.getTenantId() + ", reporteId: " + metaDataReport.getJobId());
 
-            return "Metadatos del reporte guardados en DynamoDB para tenant: " + metaDataReport.getTenant_id()
-                    + ", reporteId: " + metaDataReport.getReport_id();
+            return "Metadatos del reporte guardados en DynamoDB para tenant: " + metaDataReport.getTenantId()
+                    + ", reporteId: " + metaDataReport.getJobId();
 
         } catch (DynamoDbException e) {
             // Log the specific DynamoDB exception for better debugging
@@ -62,6 +69,12 @@ public class ImplUseCaseDynamoDB implements IuseCaseDynamoDB {
             // Catch any other unexpected exceptions
             System.err.println("Error inesperado al guardar ítem en DynamoDB: " + e.getMessage());
             throw new RuntimeException("An unexpected error occurred while saving report metadata.", e);
+        }
+    }
+
+    private void addAttributeIfNotNull(Map<String, AttributeValue> item, String key , String value){
+        if (value != null && !value.isEmpty()) {
+            item.put(key, AttributeValue.builder().s(value).build());
         }
     }
 

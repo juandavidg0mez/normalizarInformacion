@@ -139,11 +139,11 @@ public class LambdaPipeLiveV2 implements RequestStreamHandler {
             MetaDataReport metaDataReportDTO = new MetaDataReport();
             String pathJsonS3 = tenant + "/" + poolUserId + "/reports/" + activo + "/" + fileName;
             metaDataReportDTO.setActivo(activo);
-            metaDataReportDTO.setTenant_id(tenant);
+            metaDataReportDTO.setTenantId(tenant);
             metaDataReportDTO.setPoolUserId(poolUserId);
 
             // el item no se edita por que el report_id es diferente
-            metaDataReportDTO.setReport_id(report_id);
+            metaDataReportDTO.setJobId(report_id);
             metaDataReportDTO.setS3JsonPath(pathJsonS3);
             metaDataReportDTO.setS3PdfPath("Missing But Soon");
             metaDataReportDTO.setTimestamp(timestamp);
@@ -165,7 +165,7 @@ public class LambdaPipeLiveV2 implements RequestStreamHandler {
             
             System.out.println(
                     "Estos son los objetos que esta tomando para graficar : " + template + "\ny el modelo" + modelo);
-            ResponseReport reponseBody = new ResponseReport(metaDataReportDTO.getReport_id(), html, graficaCNData,
+            ResponseReport reponseBody = new ResponseReport(metaDataReportDTO.getJobId(), html, graficaCNData,
                     graficaRCNData, graficaDataExi);
 
             Map<String, String> headers = new HashMap<>();
