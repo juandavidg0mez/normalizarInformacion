@@ -1,19 +1,26 @@
 package com.normalizar.config.descomZip.Utils.useCase.impl;
 
+
 import java.io.InputStream;
 import java.util.Map;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
+import com.amazonaws.services.lambda.runtime.Context;
+import com.amazonaws.services.lambda.runtime.events.models.s3.S3EventNotification.S3EventNotificationRecord;
 import com.normalizar.config.descomZip.Utils.domain.ZipFileToLambda;
 import com.normalizar.config.descomZip.Utils.useCase.IUseCaseZip;
 
+
 import software.amazon.awssdk.core.sync.RequestBody;
 import software.amazon.awssdk.services.s3.S3Client;
+import software.amazon.awssdk.services.s3.model.GetObjectRequest;
+import software.amazon.awssdk.services.s3.model.HeadObjectRequest;
+import software.amazon.awssdk.services.s3.model.HeadObjectResponse;
 import software.amazon.awssdk.services.s3.model.PutObjectRequest;
 
 public class ImpleIUseCaseZip implements IUseCaseZip {
-    private static final String BUCKET = "";
+    private static final String BUCKET = "my-spring-bucket-eligomez ";
     private static final String UPLOADS_EXCEL_A_S3 = "uploadsExcels";
     private S3Client s3Client;
 
@@ -49,6 +56,50 @@ public class ImpleIUseCaseZip implements IUseCaseZip {
         } catch (Exception e) {
             e.printStackTrace();
             System.out.println("Archivo Zip descomprimido y listo para normalizar mensajes de SQS");
+        }
+    }
+
+    private HeadObjectResponse getHeadObject(S3Client s3Client, String bucket, String key) {
+        HeadObjectRequest headObjectRequest = HeadObjectRequest.builder()
+                .bucket(bucket)
+                .key(key)
+                .build();
+        return s3Client.headObject(headObjectRequest);
+    }
+
+    @Override
+    public void procesarRecord(S3EventNotificationRecord record, Context context) {
+        String bucketName = record.getS3().getBucket().getName();
+        String s3Key = record.getS3().getObject().getKey();
+
+        try {
+            HeadObjectResponse headObjectResponse = getHeadObject(s3Client, bucketName, s3Key);
+            Map<String, String> objecZipMetaData = headObjectResponse.metadata();
+            String jobId = objecZipMetaData.get("jobid");
+
+            GetObjectRequest getObjectRequest = GetObjectRequest.builder()
+                    .bucket(bucketName)
+                    .key(s3Key)
+                    .build();
+
+            try (InputStream zInputStream = s3Client.getObject(getObjectRequest)) {
+                String[] keySplit = s3Key.split("/");
+                if (keySplit.length < 4) {
+                    throw new IllegalArgumentException("El path del objeto no tiene suficiente información");
+                }
+
+                ZipFileToLambda zipFileToLambda = new ZipFileToLambda();
+                zipFileToLambda.setJobId(jobId);
+                zipFileToLambda.setZipStream(zInputStream);
+                zipFileToLambda.setTenantName(keySplit[1]);
+                zipFileToLambda.setUserPoolId(keySplit[2]);
+                zipFileToLambda.setActivo(keySplit[3]);
+
+                unZipAndUpload(zipFileToLambda);
+            }
+
+        } catch (Exception e) {
+           context.getLogger().log("Error procesando el archivo ZIP: " + s3Key + " - " + e.getMessage());
         }
     }
 
