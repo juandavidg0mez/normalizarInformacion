@@ -10,6 +10,7 @@ import software.amazon.awssdk.services.dynamodb.DynamoDbClient;
 import software.amazon.awssdk.services.dynamodb.model.AttributeValue;
 import software.amazon.awssdk.services.dynamodb.model.DynamoDbException;
 import software.amazon.awssdk.services.dynamodb.model.PutItemRequest;
+import software.amazon.awssdk.services.dynamodb.model.UpdateItemRequest;
 
 public class ImplUseCaseDynamoDB implements IuseCaseDynamoDB {
 
@@ -21,7 +22,7 @@ public class ImplUseCaseDynamoDB implements IuseCaseDynamoDB {
         } catch (Exception e) {
             throw new UnsupportedOperationException("Unimplemented method 'CreateItem'");
         }
-    }                           
+    }
 
     @Override
     public String CreateItem(MetaDataReport metaDataReport, DynamoDbClient client, String tableName) {
@@ -44,7 +45,7 @@ public class ImplUseCaseDynamoDB implements IuseCaseDynamoDB {
             addAttributeIfNotNull(item, "fecha_creacion", metaDataReport.getTimestamp());
             addAttributeIfNotNull(item, "estado", metaDataReport.getEstado());
 
-            if (!item.containsKey("tenant_id")|| !item.containsKey("job_id")) {
+            if (!item.containsKey("tenant_id") || !item.containsKey("job_id")) {
                 throw new IllegalArgumentException("la clave de particion 'tenant_id' y 'job_id' no pueden ser nuls");
             }
 
@@ -72,10 +73,26 @@ public class ImplUseCaseDynamoDB implements IuseCaseDynamoDB {
         }
     }
 
-    private void addAttributeIfNotNull(Map<String, AttributeValue> item, String key , String value){
+    private void addAttributeIfNotNull(Map<String, AttributeValue> item, String key, String value) {
         if (value != null && !value.isEmpty()) {
             item.put(key, AttributeValue.builder().s(value).build());
         }
+    }
+
+    @Override
+    public void UpdateItemDbBrainStatus(String jobId, String tenantName, String status, DynamoDbClient client) {
+        UpdateItemRequest updateItemRequest = UpdateItemRequest.builder()
+                .tableName("report_SQS_brain")
+                .key(Map.of(
+                        "tenant_id", AttributeValue.builder().s(tenantName).build(),
+                        "job_id", AttributeValue.builder().s(jobId).build()))
+                // Update expression
+                .updateExpression("SET estado = :statusVal")
+                .expressionAttributeValues(Map.of(
+                        ":statusVal", AttributeValue.builder().s(status).build()))
+                .build();
+
+        client.updateItem(updateItemRequest);
     }
 
 }
