@@ -152,7 +152,7 @@ public class LambdaPipeLiveV2 implements RequestStreamHandler {
             String saveItem = this.iuseCaseDynamoDB.CreateItem(metaDataReportDTO, dbClient, "tablaReports");
             System.out.println(saveItem);
 
-            Map<String, Object> modelo = imappingUseCase.mapJsonToThymeleafModel(jsonResult, report);
+            Map<String, Object> modelo = imappingUseCase.mapJsonToThymeleafModel(jsonResult);
 
             String template = itemplateCase.selectTemplate(activo);
             System.out.println(activo);

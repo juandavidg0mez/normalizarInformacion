@@ -1,7 +1,8 @@
 package com.normalizar.repositoryDynamoDB;
 
+import java.util.ArrayList;
 import java.util.HashMap;
-
+import java.util.List;
 import java.util.Map;
 
 import com.normalizar.repositoryDynamoDB.entity.MetaDataReport;
@@ -10,6 +11,8 @@ import software.amazon.awssdk.services.dynamodb.DynamoDbClient;
 import software.amazon.awssdk.services.dynamodb.model.AttributeValue;
 import software.amazon.awssdk.services.dynamodb.model.DynamoDbException;
 import software.amazon.awssdk.services.dynamodb.model.PutItemRequest;
+import software.amazon.awssdk.services.dynamodb.model.QueryRequest;
+import software.amazon.awssdk.services.dynamodb.model.QueryResponse;
 import software.amazon.awssdk.services.dynamodb.model.UpdateItemRequest;
 
 public class ImplUseCaseDynamoDB implements IuseCaseDynamoDB {
@@ -93,6 +96,60 @@ public class ImplUseCaseDynamoDB implements IuseCaseDynamoDB {
                 .build();
 
         client.updateItem(updateItemRequest);
+    }
+
+    @Override
+    public void UpdateItemDbBrainStausPath(String jobId, String tenantName, String status, String pathS3Html,
+            DynamoDbClient client) {
+        UpdateItemRequest uoUpdateItemRequest = UpdateItemRequest.builder()
+                .tableName("report_SQS_brain")
+                .key(Map.of(
+                        "tenant_id", AttributeValue.builder().s(tenantName).build(),
+                        "job_id", AttributeValue.builder().s(jobId).build()))
+                .updateExpression("SET estado = :statusVal, path_HTML_S3 = :spath_html")
+                .expressionAttributeValues(Map.of(":statusVal", AttributeValue.builder().s(status).build(),
+                        ":spath_html", AttributeValue.builder().s(pathS3Html).build()))
+                .build();
+        client.updateItem(uoUpdateItemRequest);
+    }
+
+    @Override
+    public List<Map<String, String>> consultarLotesPendientes(String tenantName, String jod_id, String status, DynamoDbClient client) {
+        Map<String,String> expName = Map.of("#pk","tenant_id",
+                    "#sk", "jod_id",
+                    "#status" , "estado");
+
+        Map<String, AttributeValue> expValues = Map.of(
+            ":pkVal", AttributeValue.builder().s(tenantName).build(),
+            ":skVal" , AttributeValue.builder().s(jod_id).build(),
+            ":estadoVal" , AttributeValue.builder().s(status).build()
+
+        );
+
+        QueryRequest queryRequest = QueryRequest.builder()
+            .tableName("report_SQS_brain")
+            .keyConditionExpression("#pk = :pkVal AND begins_with(#sk, :skVal)")
+            .filterExpression("#status = :estadoVal")
+            .expressionAttributeNames(expName)
+            .expressionAttributeValues(expValues)
+            .build();
+
+        QueryResponse queryResponse = client.query(queryRequest);
+        
+        List<Map<String, String>> resultado = new ArrayList<>();
+        for (Map<String,AttributeValue> item : queryResponse.items()) {
+            Map<String, String> itemPlano = new HashMap<>();
+            item.forEach((k,v)-> {
+                if (v.s() != null) itemPlano.put(k, v.s());
+                else if (v.n() != null) itemPlano.put(k, v.n());
+                else if (v.bool() != null) itemPlano.put(k, v.bool().toString());
+            });
+
+            resultado.add(itemPlano);
+
+        }
+
+        return resultado;
     }
 
 }

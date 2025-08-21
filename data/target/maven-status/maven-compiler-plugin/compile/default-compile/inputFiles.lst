@@ -7,12 +7,14 @@ C:\Users\jdgomez\Documents\certificados\ca\ServicioReportesS3\Normalizacion\norm
 C:\Users\jdgomez\Documents\certificados\ca\ServicioReportesS3\Normalizacion\normalizarInformacion\data\src\main\java\com\normalizar\config\descomZip\Utils\useCase\IUseCaseZip.java
 C:\Users\jdgomez\Documents\certificados\ca\ServicioReportesS3\Normalizacion\normalizarInformacion\data\src\main\java\com\normalizar\config\descomZip\Utils\zipDescomprimir.java
 C:\Users\jdgomez\Documents\certificados\ca\ServicioReportesS3\Normalizacion\normalizarInformacion\data\src\main\java\com\normalizar\controller\LambdaPipeLiveV2.java
+C:\Users\jdgomez\Documents\certificados\ca\ServicioReportesS3\Normalizacion\normalizarInformacion\data\src\main\java\com\normalizar\controller\LambdaQueryFilesStatus.java
 C:\Users\jdgomez\Documents\certificados\ca\ServicioReportesS3\Normalizacion\normalizarInformacion\data\src\main\java\com\normalizar\controller\RenderPdfLambda.java
 C:\Users\jdgomez\Documents\certificados\ca\ServicioReportesS3\Normalizacion\normalizarInformacion\data\src\main\java\com\normalizar\controller\UpdateConlusionsLambda.java
 C:\Users\jdgomez\Documents\certificados\ca\ServicioReportesS3\Normalizacion\normalizarInformacion\data\src\main\java\com\normalizar\controller\UploadZipController\LambdaToS3UploadZip.java
 C:\Users\jdgomez\Documents\certificados\ca\ServicioReportesS3\Normalizacion\normalizarInformacion\data\src\main\java\com\normalizar\domain\ConclusionesObjetoFinal.java
 C:\Users\jdgomez\Documents\certificados\ca\ServicioReportesS3\Normalizacion\normalizarInformacion\data\src\main\java\com\normalizar\domain\GraficaData.java
 C:\Users\jdgomez\Documents\certificados\ca\ServicioReportesS3\Normalizacion\normalizarInformacion\data\src\main\java\com\normalizar\domain\GraficaDataExi.java
+C:\Users\jdgomez\Documents\certificados\ca\ServicioReportesS3\Normalizacion\normalizarInformacion\data\src\main\java\com\normalizar\domain\ItemQuery.java
 C:\Users\jdgomez\Documents\certificados\ca\ServicioReportesS3\Normalizacion\normalizarInformacion\data\src\main\java\com\normalizar\domain\PdfRenderRequest.java
 C:\Users\jdgomez\Documents\certificados\ca\ServicioReportesS3\Normalizacion\normalizarInformacion\data\src\main\java\com\normalizar\domain\Report.java
 C:\Users\jdgomez\Documents\certificados\ca\ServicioReportesS3\Normalizacion\normalizarInformacion\data\src\main\java\com\normalizar\domain\ResponseObjetoFinal.java
@@ -31,6 +33,9 @@ C:\Users\jdgomez\Documents\certificados\ca\ServicioReportesS3\Normalizacion\norm
 C:\Users\jdgomez\Documents\certificados\ca\ServicioReportesS3\Normalizacion\normalizarInformacion\data\src\main\java\com\normalizar\serviceS3\presigneUrl\useCase\IUseCasePresignedUrl.java
 C:\Users\jdgomez\Documents\certificados\ca\ServicioReportesS3\Normalizacion\normalizarInformacion\data\src\main\java\com\normalizar\serviceS3\UseCase\impl\ImplUseCaseS3Service.java
 C:\Users\jdgomez\Documents\certificados\ca\ServicioReportesS3\Normalizacion\normalizarInformacion\data\src\main\java\com\normalizar\serviceS3\UseCase\IuseCaseS3Service.java
+C:\Users\jdgomez\Documents\certificados\ca\ServicioReportesS3\Normalizacion\normalizarInformacion\data\src\main\java\com\normalizar\teamplateEvent\controller\LambdaTemplateEvent.java
+C:\Users\jdgomez\Documents\certificados\ca\ServicioReportesS3\Normalizacion\normalizarInformacion\data\src\main\java\com\normalizar\teamplateEvent\useCase\impl\ImpleUseCaseTemplateEvent.java
+C:\Users\jdgomez\Documents\certificados\ca\ServicioReportesS3\Normalizacion\normalizarInformacion\data\src\main\java\com\normalizar\teamplateEvent\useCase\UseCaseTemplateEvent.java
 C:\Users\jdgomez\Documents\certificados\ca\ServicioReportesS3\Normalizacion\normalizarInformacion\data\src\main\java\com\normalizar\templateMemori\B64ImageReplacedElementFactory.java
 C:\Users\jdgomez\Documents\certificados\ca\ServicioReportesS3\Normalizacion\normalizarInformacion\data\src\main\java\com\normalizar\templateMemori\ImpleCaseMemory.java
 C:\Users\jdgomez\Documents\certificados\ca\ServicioReportesS3\Normalizacion\normalizarInformacion\data\src\main\java\com\normalizar\templateMemori\ItemplateCase.java

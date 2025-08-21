@@ -1,16 +1,20 @@
 com\normalizar\serviceS3\presigneUrl\domain\PresignedUrl.class
 com\normalizar\domain\Report.class
 com\normalizar\serviceS3\presigneUrl\useCase\IUseCasePresignedUrl.class
+com\normalizar\teamplateEvent\useCase\UseCaseTemplateEvent.class
 com\normalizar\serviceS3\presigneUrl\domain\GeneralRespone.class
 com\normalizar\config\descomZip\Utils\controller\LambdaUploadFilesZips.class
 com\normalizar\repositoryDynamoDB\entity\MetaDataReport.class
 com\normalizar\config\descomZip\Utils\useCase\IUseCaseZip.class
 com\normalizar\domain\GraficaDataExi.class
+com\normalizar\teamplateEvent\useCase\impl\ImpleUseCaseTemplateEvent.class
 com\normalizar\domain\GraficaData.class
 com\normalizar\serviceS3\presigneUrl\domain\dto\DtoUploadZip.class
 com\normalizar\controller\LambdaPipeLiveV2.class
 com\normalizar\serviceS3\presigneUrl\useCase\Impl\ImplUseCasePresignedUrl.class
+com\normalizar\domain\ItemQuery.class
 com\normalizar\serviceS3\presigneUrl\controller\UploadZipController.class
+com\normalizar\controller\LambdaQueryFilesStatus.class
 com\normalizar\controller\UploadZipController\LambdaToS3UploadZip.class
 com\normalizar\domain\ResponseReport.class
 com\normalizar\thymeleaRender\ThymeleaRenderTeamplate.class
@@ -37,4 +41,5 @@ com\normalizar\templateMemori\ItemplateCase.class
 com\normalizar\repositoryDynamoDB\entity\UpdateConlucions.class
 com\normalizar\config\descomZip\Utils\domain\dto\MessageResponse.class
 com\normalizar\utility\impl\ImplMappingUseCase$1.class
+com\normalizar\teamplateEvent\controller\LambdaTemplateEvent.class
 com\normalizar\config\ConfigDynamoDBClient.class

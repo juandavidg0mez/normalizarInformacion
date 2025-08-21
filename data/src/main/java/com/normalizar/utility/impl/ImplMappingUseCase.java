@@ -12,7 +12,7 @@ import java.util.Map;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.normalizar.domain.Report;
+
 import com.normalizar.utility.ImappingUseCase;
 
 // 
@@ -20,7 +20,6 @@ import com.normalizar.utility.ImappingUseCase;
 //      * suitable for Thymeleaf rendering.
 //      *
 //      * @param jsonString The raw JSON string from the normalization service.
-//      * @param report The Report object from the initial request, used for header data.
 //      * @return A Map<String, Object> containing data structured for Thymeleaf.
 //      * @throws IOException If JSON parsing fails.
 // 
@@ -29,7 +28,7 @@ public class ImplMappingUseCase implements ImappingUseCase {
     private static final ObjectMapper objectMapper = new ObjectMapper();
 
     @Override
-    public Map<String, Object> mapJsonToThymeleafModel(String jsonString, Report report) throws IOException {
+    public Map<String, Object> mapJsonToThymeleafModel(String jsonString) throws IOException {
         Map<String, Object> fullNormalizedData = objectMapper.readValue(jsonString,
                 new TypeReference<Map<String, Object>>() {
                 });
@@ -58,7 +57,7 @@ public class ImplMappingUseCase implements ImappingUseCase {
             informacionGeneral.put("norma", infoGeneral.get("norma"));
             informacionGeneral.put("clase", infoGeneral.get("clase"));
             informacionGeneral.put("Burden", infoGeneral.get("Burden"));
-            informacionGeneral.put("Compañia", infoGeneral.get("Compañia"));
+            informacionGeneral.put("compania", infoGeneral.get("Compañia"));
             informacionGeneral.put("planta", infoGeneral.get("planta"));
             informacionGeneral.put("subestacion", infoGeneral.get("subestacion"));
             informacionGeneral.put("tag", infoGeneral.get("tag"));
@@ -74,7 +73,7 @@ public class ImplMappingUseCase implements ImappingUseCase {
             Map<String, String> headerData = new HashMap<>();
             headerData.put("protocolo", infoGeneral.get("norma") + "-PROT"); // Example
             headerData.put("hoja", "1 de X"); // Dynamic later?
-            headerData.put("codigo", report.getActivo() + "-CODE"); // Example
+            headerData.put("codigo",  "-CODE"); // Example
             headerData.put("ciudad", "Bucaramanga"); // Static for now
             headerData.put("fecha",
                     Instant.now().atZone(ZoneId.of("-05:00")).format(DateTimeFormatter.ofPattern("dd/MM/yyyy")));
@@ -88,7 +87,7 @@ public class ImplMappingUseCase implements ImappingUseCase {
             resultados.put("nucleo", resultadosBlockJson.get("nucleo"));
             resultados.put("R_devanados", resultadosBlockJson.get("R_devanados"));
             resultados.put("relacionCorriente", resultadosBlockJson.get("relacionCorriente"));
-            resultados.put("poplaridad", resultadosBlockJson.get("poplaridad"));
+            resultados.put("polaridad", resultadosBlockJson.get("polaridad"));
             resultados.put("EvalGeneral", resultadosBlockJson.get("EvalGeneral"));
 
             modelo.put("resultados", resultados);
@@ -138,7 +137,7 @@ public class ImplMappingUseCase implements ImappingUseCase {
             ResultadoExitacion.put("ALF", ResultadoExitacionJson.get("ALF"));
             ResultadoExitacion.put("ALFi", ResultadoExitacionJson.get("ALFi"));
             ResultadoExitacion.put("eci", ResultadoExitacionJson.get("eci"));
-            ResultadoExitacion.put("Cirterio", ResultadoExitacionJson.get("Cirterio"));
+            ResultadoExitacion.put("Criterio", ResultadoExitacionJson.get("Criterio"));
             ResultadoExitacion.put("evaluacion", ResultadoExitacionJson.get("evaluacion"));
             modelo.put("ResultadoExitacion", ResultadoExitacion);
 
@@ -147,9 +146,9 @@ public class ImplMappingUseCase implements ImappingUseCase {
 
         // --- 5. Graph Data (GraficaCN and GraficaRCN) ---
         // These are already well-structured for Chart.js, so just pass them through.
-        modelo.put("GraficaCN", fullNormalizedData.get("GraficaCN"));
-        modelo.put("GraficaRCN", fullNormalizedData.get("GraficaRCN"));
-        modelo.put("GraficaExitacion", fullNormalizedData.get("GraficaExitacion"));
+        modelo.put("grafica_corriente_nominal", fullNormalizedData.get("grafica_corriente_nominal"));
+        modelo.put("grafica_relacion_corriente_nominal", fullNormalizedData.get("grafica_relacion_corriente_nominal"));
+        modelo.put("grafica_exitacion_ct", fullNormalizedData.get("grafica_exitacion_ct"));
         modelo.put("conclusiones", new ArrayList<>()); // Start empty for preview
         return modelo;
     }
