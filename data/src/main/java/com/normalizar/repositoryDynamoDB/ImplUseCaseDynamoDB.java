@@ -116,7 +116,7 @@ public class ImplUseCaseDynamoDB implements IuseCaseDynamoDB {
     @Override
     public List<Map<String, String>> consultarLotesPendientes(String tenantName, String jod_id, String status, DynamoDbClient client) {
         Map<String,String> expName = Map.of("#pk","tenant_id",
-                    "#sk", "jod_id",
+                    "#sk", "job_id",
                     "#status" , "estado");
 
         Map<String, AttributeValue> expValues = Map.of(
