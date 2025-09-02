@@ -24,6 +24,11 @@ C:\Users\jdgomez\Documents\certificados\ca\ServicioReportesS3\Normalizacion\norm
 C:\Users\jdgomez\Documents\certificados\ca\ServicioReportesS3\Normalizacion\normalizarInformacion\data\src\main\java\com\normalizar\repositoryDynamoDB\entity\UpdateConlucions.java
 C:\Users\jdgomez\Documents\certificados\ca\ServicioReportesS3\Normalizacion\normalizarInformacion\data\src\main\java\com\normalizar\repositoryDynamoDB\ImplUseCaseDynamoDB.java
 C:\Users\jdgomez\Documents\certificados\ca\ServicioReportesS3\Normalizacion\normalizarInformacion\data\src\main\java\com\normalizar\repositoryDynamoDB\IuseCaseDynamoDB.java
+C:\Users\jdgomez\Documents\certificados\ca\ServicioReportesS3\Normalizacion\normalizarInformacion\data\src\main\java\com\normalizar\serviceS3\abstracObject\controller\LambdaObjectAbstracS3.java
+C:\Users\jdgomez\Documents\certificados\ca\ServicioReportesS3\Normalizacion\normalizarInformacion\data\src\main\java\com\normalizar\serviceS3\abstracObject\domian\RequestObject.java
+C:\Users\jdgomez\Documents\certificados\ca\ServicioReportesS3\Normalizacion\normalizarInformacion\data\src\main\java\com\normalizar\serviceS3\abstracObject\domian\ResponseObject.java
+C:\Users\jdgomez\Documents\certificados\ca\ServicioReportesS3\Normalizacion\normalizarInformacion\data\src\main\java\com\normalizar\serviceS3\abstracObject\useCase\impl\ImplObjectAbstracS3.java
+C:\Users\jdgomez\Documents\certificados\ca\ServicioReportesS3\Normalizacion\normalizarInformacion\data\src\main\java\com\normalizar\serviceS3\abstracObject\useCase\IUseCaseObjectAbstracS3.java
 C:\Users\jdgomez\Documents\certificados\ca\ServicioReportesS3\Normalizacion\normalizarInformacion\data\src\main\java\com\normalizar\serviceS3\domain\pojoClass.java
 C:\Users\jdgomez\Documents\certificados\ca\ServicioReportesS3\Normalizacion\normalizarInformacion\data\src\main\java\com\normalizar\serviceS3\presigneUrl\controller\UploadZipController.java
 C:\Users\jdgomez\Documents\certificados\ca\ServicioReportesS3\Normalizacion\normalizarInformacion\data\src\main\java\com\normalizar\serviceS3\presigneUrl\domain\dto\DtoUploadZip.java

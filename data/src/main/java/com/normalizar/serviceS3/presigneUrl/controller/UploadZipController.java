@@ -47,7 +47,7 @@ public class UploadZipController implements RequestStreamHandler{
             String result =this.iUseCasePresignedUrl.upLoadFileForUrl(presignedUrl);
             System.out.println("Resultado subida ZIP: " + result);
 
-            GeneralRespone generalRespone = new GeneralRespone("Se a subido el archivo Zip");
+            GeneralRespone generalRespone = new GeneralRespone(result);
 
             Map<String, String> headers = new HashMap<>();
             headers.put("Content-Type", "application/json");

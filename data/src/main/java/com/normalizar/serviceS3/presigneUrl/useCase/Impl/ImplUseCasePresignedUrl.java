@@ -68,7 +68,7 @@ public class ImplUseCasePresignedUrl implements IUseCasePresignedUrl {
             System.out.println("Se Actulizo base de datos en inicio de Cola");
 
             
-            return keyS3;
+            return jobId;
 
             
         } catch (Exception e) {

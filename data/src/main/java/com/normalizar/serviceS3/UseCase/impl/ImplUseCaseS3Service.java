@@ -12,17 +12,21 @@ import software.amazon.awssdk.services.s3.model.PutObjectRequest;
 public class ImplUseCaseS3Service implements IuseCaseS3Service {
 
     private S3Client s3Client;
-    public ImplUseCaseS3Service(){
+
+    public ImplUseCaseS3Service() {
         this.s3Client = S3Client.create();
     }
 
     @Override
-    public String uploaFile(String userPoolId, String tennatName,String activo, InputStream file, String nameFile, String contenType)
+    public String uploaFile(String userPoolId, String tennatName, String activo, InputStream file, String nameFile,
+            String contenType)
             throws IOException {
         try {
-            // ByteArrayInputStream fileForm = new ByteArrayInputStream(file.readAllBytes());
+            // ByteArrayInputStream fileForm = new
+            // ByteArrayInputStream(file.readAllBytes());
             // String nombrePdf = nameFile.replaceAll(".xls", ".pdf");
-            String keyS3 = "HTML_toGestion" + "/" + tennatName + "/" + userPoolId + "/reports/"+ activo + "/" + nameFile;
+            String keyS3 = "HTML_toGestion" + "/" + tennatName + "/" + userPoolId + "/reports/" + activo + "/"
+                    + nameFile;
             // Crear solicitud para subir el objeto
             PutObjectRequest putObjectRequest = PutObjectRequest.builder()
                     .bucket("my-spring-bucket-eligomez")
@@ -30,12 +34,13 @@ public class ImplUseCaseS3Service implements IuseCaseS3Service {
                     .contentType(contenType)
                     .build();
 
-            s3Client.putObject(putObjectRequest, RequestBody.fromInputStream(file, file.available()));
+            byte[] bytes = file.readAllBytes();
+            s3Client.putObject(putObjectRequest, RequestBody.fromBytes(bytes));
 
             return "Se ha subido el archivo de forma correcta";
         } catch (Exception e) {
             throw new RuntimeException("Error al subir el archivo normalizado Json a S3", e);
         }
     }
-    
+
 }
