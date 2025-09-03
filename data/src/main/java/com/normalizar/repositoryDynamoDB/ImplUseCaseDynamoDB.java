@@ -114,35 +114,83 @@ public class ImplUseCaseDynamoDB implements IuseCaseDynamoDB {
     }
 
     @Override
-    public List<Map<String, String>> consultarLotesPendientes(String tenantName, String jod_id, String status, DynamoDbClient client) {
-        Map<String,String> expName = Map.of("#pk","tenant_id",
-                    "#sk", "job_id",
-                    "#status" , "estado");
+    public List<Map<String, String>> consultarLotesPendientes(String tenantName, String jod_id, String status,
+            DynamoDbClient client) {
+        Map<String, String> expName = Map.of("#pk", "tenant_id",
+                "#sk", "job_id",
+                "#status", "estado");
 
         Map<String, AttributeValue> expValues = Map.of(
-            ":pkVal", AttributeValue.builder().s(tenantName).build(),
-            ":skVal" , AttributeValue.builder().s(jod_id).build(),
-            ":estadoVal" , AttributeValue.builder().s(status).build()
+                ":pkVal", AttributeValue.builder().s(tenantName).build(),
+                ":skVal", AttributeValue.builder().s(jod_id).build(),
+                ":estadoVal", AttributeValue.builder().s(status).build()
 
         );
 
         QueryRequest queryRequest = QueryRequest.builder()
-            .tableName("report_SQS_brain")
-            .keyConditionExpression("#pk = :pkVal AND begins_with(#sk, :skVal)")
-            .filterExpression("#status = :estadoVal")
-            .expressionAttributeNames(expName)
-            .expressionAttributeValues(expValues)
-            .build();
+                .tableName("report_SQS_brain")
+                .keyConditionExpression("#pk = :pkVal AND begins_with(#sk, :skVal)")
+                .filterExpression("#status = :estadoVal")
+                .expressionAttributeNames(expName)
+                .expressionAttributeValues(expValues)
+                .build();
 
         QueryResponse queryResponse = client.query(queryRequest);
-        
+
         List<Map<String, String>> resultado = new ArrayList<>();
-        for (Map<String,AttributeValue> item : queryResponse.items()) {
+        for (Map<String, AttributeValue> item : queryResponse.items()) {
             Map<String, String> itemPlano = new HashMap<>();
-            item.forEach((k,v)-> {
-                if (v.s() != null) itemPlano.put(k, v.s());
-                else if (v.n() != null) itemPlano.put(k, v.n());
-                else if (v.bool() != null) itemPlano.put(k, v.bool().toString());
+            item.forEach((k, v) -> {
+                if (v.s() != null)
+                    itemPlano.put(k, v.s());
+                else if (v.n() != null)
+                    itemPlano.put(k, v.n());
+                else if (v.bool() != null)
+                    itemPlano.put(k, v.bool().toString());
+            });
+
+            resultado.add(itemPlano);
+
+        }
+
+        return resultado;
+    }
+
+    @Override
+    public List<Map<String, String>> consultarReportesPendientes(String tenantName, String poolUserId, String status,
+            DynamoDbClient client) {
+        Map<String, String> expName = Map.of("#pk", "tenant_id",
+                "#poolId", "pool_user_id",
+                "#status", "estado");
+
+        Map<String, AttributeValue> expValues = Map.of(
+                ":pkVal", AttributeValue.builder().s(tenantName).build(),
+                ":poolIdVal", AttributeValue.builder().s(poolUserId).build(),
+                ":estadoVal", AttributeValue.builder().s(status).build()
+
+        );
+        QueryRequest queryRequest = QueryRequest.builder()
+                .tableName("report_SQS_brain")
+                // Esta clase solo acepta una clave de partición en la KeyCondition
+                //Puede haber condiciones sobre la SOT KEY
+                .keyConditionExpression("#pk = :pkVal")
+                // Otros atributos van aca para hacer la consulta
+                .filterExpression("#poolId = :poolIdVal AND #status = :estadoVal")
+                .expressionAttributeNames(expName)
+                .expressionAttributeValues(expValues)
+                .build();
+
+        QueryResponse queryResponse = client.query(queryRequest);
+        List<Map<String, String>> resultado = new ArrayList<>();
+        for (Map<String, AttributeValue> item : queryResponse.items()) {
+            Map<String, String> itemPlano = new HashMap<>();
+            item.forEach((k, v) -> {
+                if (v.s() != null)
+                    itemPlano.put(k, v.s());
+                else if (v.n() != null)
+                    itemPlano.put(k, v.n());
+                else if (v.bool() != null)
+                    itemPlano.put(k, v.bool().toString());
             });
 
             resultado.add(itemPlano);
