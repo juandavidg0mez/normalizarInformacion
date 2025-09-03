@@ -3,6 +3,7 @@ package com.normalizar.teamplateEvent.useCase.impl;
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.net.URLDecoder;
+
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.Map;
@@ -70,6 +71,7 @@ public class ImpleUseCaseTemplateEvent implements UseCaseTemplateEvent {
                 // Armar los datos del usurio para enviar archivo
 
                 String[] keySplit = s3Key.split("/");
+                System.out.println("Path de donde adquirimos dados");
                 System.out.println("Split: " + Arrays.toString(keySplit));
                 if (keySplit.length < 4) {
                     throw new IllegalArgumentException("El path del objeto no tiene suficiente información");
@@ -93,8 +95,7 @@ public class ImpleUseCaseTemplateEvent implements UseCaseTemplateEvent {
                 byte[] byteHtml = html.getBytes(StandardCharsets.UTF_8);
                 InputStream archivoHtml = new ByteArrayInputStream(byteHtml);
 
-                this.iuseCaseS3Service.uploaFile(poolUserId, tenantName, activo, archivoHtml, fileNameHtml,
-                        "text/html");
+                this.iuseCaseS3Service.uploaFile(poolUserId, tenantName, activo, archivoHtml, fileNameHtml, "text/html", jobID);
 
                 System.out.println(modelo);
                 System.out.println("Se creo el archivo en S3");

@@ -4,7 +4,7 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.lang.reflect.Type;
+
 import java.net.URI;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
@@ -120,7 +120,7 @@ public class LambdaPipeLiveV2 implements RequestStreamHandler {
             byte[] jsonBytes = jsonResult.getBytes(StandardCharsets.UTF_8);
             InputStream fileMemory = new ByteArrayInputStream(jsonBytes);
 
-            this.iuseCaseS3Service.uploaFile(poolUserId, tenant, activo, fileMemory, fileName, "application/json");
+            this.iuseCaseS3Service.uploaFile(poolUserId, tenant, activo, fileMemory, fileName, "application/json", "Hola");
             System.out.println("Bloque de codigo subir archivo activado");
 
             // Usar el contenido para seguir procesando los datos
@@ -161,7 +161,7 @@ public class LambdaPipeLiveV2 implements RequestStreamHandler {
             byte[] byteHtml = html.getBytes(StandardCharsets.UTF_8);
             InputStream archivoHtml = new ByteArrayInputStream(byteHtml);
             String htmlFileName = "data_normalizada" + UUID.randomUUID().toString() + ".html"; 
-            this.iuseCaseS3Service.uploaFile(poolUserId, tenant, activo, archivoHtml, htmlFileName, "text/html");
+            this.iuseCaseS3Service.uploaFile(poolUserId, tenant, activo, archivoHtml, htmlFileName, "text/html", "Hola");
             
             System.out.println(
                     "Estos son los objetos que esta tomando para graficar : " + template + "\ny el modelo" + modelo);

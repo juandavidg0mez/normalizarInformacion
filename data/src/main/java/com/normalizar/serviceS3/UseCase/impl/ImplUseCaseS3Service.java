@@ -18,15 +18,13 @@ public class ImplUseCaseS3Service implements IuseCaseS3Service {
     }
 
     @Override
-    public String uploaFile(String userPoolId, String tennatName, String activo, InputStream file, String nameFile,
-            String contenType)
+    public String uploaFile(String userPoolId, String tennatName, String activo, InputStream file, String nameFile,  String contenType, String jobId)
             throws IOException {
         try {
             // ByteArrayInputStream fileForm = new
             // ByteArrayInputStream(file.readAllBytes());
             // String nombrePdf = nameFile.replaceAll(".xls", ".pdf");
-            String keyS3 = "HTML_toGestion" + "/" + tennatName + "/" + userPoolId + "/reports/" + activo + "/"
-                    + nameFile;
+            String keyS3 = "HTML_toGestion" + "/" + tennatName + "/" + userPoolId + "/reports/" + activo + "/" + jobId + "/" + nameFile;
             // Crear solicitud para subir el objeto
             PutObjectRequest putObjectRequest = PutObjectRequest.builder()
                     .bucket("my-spring-bucket-eligomez")

@@ -7,6 +7,7 @@ com\normalizar\config\descomZip\Utils\controller\LambdaUploadFilesZips.class
 com\normalizar\repositoryDynamoDB\entity\MetaDataReport.class
 com\normalizar\config\descomZip\Utils\useCase\IUseCaseZip.class
 com\normalizar\domain\GraficaDataExi.class
+com\normalizar\teamplateEvent\useCase\impl\ImpleUseCaseTemplateEvent.class
 com\normalizar\domain\GraficaData.class
 com\normalizar\serviceS3\presigneUrl\domain\dto\DtoUploadZip.class
 com\normalizar\controller\LambdaPipeLiveV2.class
@@ -45,4 +46,5 @@ com\normalizar\templateMemori\ItemplateCase.class
 com\normalizar\repositoryDynamoDB\entity\UpdateConlucions.class
 com\normalizar\config\descomZip\Utils\domain\dto\MessageResponse.class
 com\normalizar\utility\impl\ImplMappingUseCase$1.class
+com\normalizar\teamplateEvent\controller\LambdaTemplateEvent.class
 com\normalizar\config\ConfigDynamoDBClient.class

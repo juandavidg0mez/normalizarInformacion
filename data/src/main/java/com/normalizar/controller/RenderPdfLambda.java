@@ -71,7 +71,7 @@ public class RenderPdfLambda implements RequestStreamHandler {
                         logger.info("PDF generado con tamaño: {} bytes", pdfBytes.length);
                         String fileNamePDF = fileName + ".pdf";
                         InputStream fileMemory = new ByteArrayInputStream(pdfBytes);
-                        this.iuseCaseS3Service.uploaFile(poolUserId, tenant_id, activo, fileMemory, fileName , "application/pdf");
+                        this.iuseCaseS3Service.uploaFile(poolUserId, tenant_id, activo, fileMemory, fileName , "application/pdf", "hola");
                         System.out.println("Bloque de codigo subir archivo activado");
 
                         // ========== ACTUALIZAR EL PATH EN DYNAMODB ========================
