@@ -33,6 +33,8 @@ com\normalizar\Main.class
 com\normalizar\serviceS3\abstracObject\domian\RequestObject.class
 com\normalizar\serviceS3\UseCase\IuseCaseS3Service.class
 com\normalizar\controller\UpdateConlusionsLambda.class
+com\normalizar\controller\LambdaQueryReportsList.class
+com\normalizar\domain\QueryReportList.class
 com\normalizar\repositoryDynamoDB\ImplUseCaseDynamoDB.class
 com\normalizar\domain\PdfRenderRequest.class
 com\normalizar\templateMemori\B64ImageReplacedElementFactory.class
