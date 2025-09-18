@@ -19,14 +19,14 @@ import software.amazon.awssdk.services.s3.model.PutObjectRequest;
 
 
 
-// Subir por medio de una URL prefirmada y actualizar el estado en DB
-// Tener en cuenta el jobId
-// Crear otra tabla ?¿
+// Caso de uso: subir un archivo ZIP al bucket S3, generar metadata en DynamoDB y
+// establecer un "estado inicial" del proceso en el pipeline.
+// Este servicio centraliza el inicio del workflow de anexos.
 public class ImplUseCasePresignedUrl implements IUseCasePresignedUrl {
     private S3Client s3Client;
     private DynamoDbClient dynamoDbClient;
     private IuseCaseDynamoDB iuseCaseDynamoDB;
-    private static final String REPORT_TABLE_NAME = "report_SQS_brain";
+    private static final String REPORT_TABLE_NAME = "report-table-brain";
     public ImplUseCasePresignedUrl(){
         this.s3Client = S3Client.create();
         this.dynamoDbClient = DynamoDbClient.create();
@@ -56,10 +56,11 @@ public class ImplUseCasePresignedUrl implements IUseCasePresignedUrl {
 
             s3Client.putObject(putObjectRequest, RequestBody.fromInputStream(presignedUrl.getFileZip(), presignedUrl.getFileSize()));
             MetaDataReport metaDataReport = new MetaDataReport();
-            metaDataReport.setTenantId(presignedUrl.getTenantName());
+            metaDataReport.setTenantName(presignedUrl.getTenantName());
             metaDataReport.setActivo(presignedUrl.getActivo());
             metaDataReport.setPoolUserId(presignedUrl.getUserPoolId());
-            metaDataReport.setJobId(jobId);
+            metaDataReport.setLoteJobId(jobId +"#"+timestamp + "#" + presignedUrl.getUserPoolId());
+            metaDataReport.setType("ZIP");
             metaDataReport.setTimestamp(timestamp);
             metaDataReport.setS3ZipPath(keyS3);
             metaDataReport.setEstado("INICIO COLA");

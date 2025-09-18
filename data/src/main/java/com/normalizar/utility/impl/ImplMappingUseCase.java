@@ -67,17 +67,17 @@ public class ImplMappingUseCase implements ImappingUseCase {
             // pirnciplal es muy parecido a lo que hicimos en la estrucutra del Script de
             // normalizacion
 
-            modelo.put("InformacionGeneral", informacionGeneral);
+            // modelo.put("InformacionGeneral", informacionGeneral);
 
             // Seccion de encabezado
-            Map<String, String> headerData = new HashMap<>();
-            headerData.put("protocolo", infoGeneral.get("norma") + "-PROT"); // Example
-            headerData.put("hoja", "1 de X"); // Dynamic later?
-            headerData.put("codigo",  "-CODE"); // Example
-            headerData.put("ciudad", "Bucaramanga"); // Static for now
-            headerData.put("fecha",
-                    Instant.now().atZone(ZoneId.of("-05:00")).format(DateTimeFormatter.ofPattern("dd/MM/yyyy")));
-            modelo.put("header", headerData);
+            // Map<String, String> headerData = new HashMap<>();
+            // headerData.put("protocolo", infoGeneral.get("norma") + "-PROT"); // Example
+            // headerData.put("hoja", "1 de X"); // Dynamic later?
+            // headerData.put("codigo",  "-CODE"); // Example
+            // headerData.put("ciudad", "Bucaramanga"); // Static for now
+            // headerData.put("fecha",
+            //         Instant.now().atZone(ZoneId.of("-05:00")).format(DateTimeFormatter.ofPattern("dd/MM/yyyy")));
+            // modelo.put("header", headerData);
 
         }
         // Seccion Resulados

@@ -10,8 +10,9 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class MetaDataReport {
-    private String tenantId;
-    private String jobId;
+    private String tenantName;
+    private String loteJobId;
+    private String type;
     private String activo;
     private String poolUserId;
     private String s3JsonPath;

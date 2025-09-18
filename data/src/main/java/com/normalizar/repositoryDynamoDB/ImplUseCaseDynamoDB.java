@@ -36,10 +36,11 @@ public class ImplUseCaseDynamoDB implements IuseCaseDynamoDB {
         try {
 
             Map<String, AttributeValue> item = new HashMap<>();
-            addAttributeIfNotNull(item, "tenant_id", metaDataReport.getTenantId());
-            addAttributeIfNotNull(item, "job_id", metaDataReport.getJobId());
+            addAttributeIfNotNull(item, "tenant-name", metaDataReport.getTenantName());
+            addAttributeIfNotNull(item, "lote-job-id", metaDataReport.getLoteJobId());
             addAttributeIfNotNull(item, "activo", metaDataReport.getActivo());
-            addAttributeIfNotNull(item, "pool_user_id", metaDataReport.getPoolUserId());
+            addAttributeIfNotNull(item, "type", metaDataReport.getType());
+            addAttributeIfNotNull(item, "user_pool_id", metaDataReport.getPoolUserId());
             addAttributeIfNotNull(item, "s3_json_path", metaDataReport.getS3JsonPath());
             addAttributeIfNotNull(item, "s3_pdf_path", metaDataReport.getS3PdfPath());
             addAttributeIfNotNull(item, "s3_zip_path", metaDataReport.getS3ZipPath());
@@ -48,8 +49,8 @@ public class ImplUseCaseDynamoDB implements IuseCaseDynamoDB {
             addAttributeIfNotNull(item, "fecha_creacion", metaDataReport.getTimestamp());
             addAttributeIfNotNull(item, "estado", metaDataReport.getEstado());
 
-            if (!item.containsKey("tenant_id") || !item.containsKey("job_id")) {
-                throw new IllegalArgumentException("la clave de particion 'tenant_id' y 'job_id' no pueden ser nuls");
+            if (!item.containsKey("tenant-name") || !item.containsKey("lote-job-id")) {
+                throw new IllegalArgumentException("la clave de particion 'tenant-name' y 'lote-job-id' no pueden ser nuls");
             }
 
             PutItemRequest putItemRequest = PutItemRequest.builder()
@@ -59,10 +60,10 @@ public class ImplUseCaseDynamoDB implements IuseCaseDynamoDB {
 
             client.putItem(putItemRequest);
             System.out.println("Metadatos del reporte guardados exitosamente para tenant: "
-                    + metaDataReport.getTenantId() + ", reporteId: " + metaDataReport.getJobId());
+                    + metaDataReport.getTenantName() + ", reporteId: " + metaDataReport.getLoteJobId());
 
-            return "Metadatos del reporte guardados en DynamoDB para tenant: " + metaDataReport.getTenantId()
-                    + ", reporteId: " + metaDataReport.getJobId();
+            return "Metadatos del reporte guardados en DynamoDB para tenant: " + metaDataReport.getTenantName()
+                    + ", reporteId: " + metaDataReport.getLoteJobId();
 
         } catch (DynamoDbException e) {
             // Log the specific DynamoDB exception for better debugging
@@ -87,8 +88,8 @@ public class ImplUseCaseDynamoDB implements IuseCaseDynamoDB {
         UpdateItemRequest updateItemRequest = UpdateItemRequest.builder()
                 .tableName("report_SQS_brain")
                 .key(Map.of(
-                        "tenant_id", AttributeValue.builder().s(tenantName).build(),
-                        "job_id", AttributeValue.builder().s(jobId).build()))
+                        "tenant-name", AttributeValue.builder().s(tenantName).build(),
+                        "lote-job-id", AttributeValue.builder().s(jobId).build()))
                 // Update expression
                 .updateExpression("SET estado = :statusVal")
                 .expressionAttributeValues(Map.of(
@@ -104,8 +105,8 @@ public class ImplUseCaseDynamoDB implements IuseCaseDynamoDB {
         UpdateItemRequest uoUpdateItemRequest = UpdateItemRequest.builder()
                 .tableName("report_SQS_brain")
                 .key(Map.of(
-                        "tenant_id", AttributeValue.builder().s(tenantName).build(),
-                        "job_id", AttributeValue.builder().s(jobId).build()))
+                        "tenant-name", AttributeValue.builder().s(tenantName).build(),
+                        "lote-job-id", AttributeValue.builder().s(jobId).build()))
                 .updateExpression("SET estado = :statusVal, path_HTML_S3 = :spath_html")
                 .expressionAttributeValues(Map.of(":statusVal", AttributeValue.builder().s(status).build(),
                         ":spath_html", AttributeValue.builder().s(pathS3Html).build()))
@@ -116,8 +117,8 @@ public class ImplUseCaseDynamoDB implements IuseCaseDynamoDB {
     @Override
     public List<Map<String, String>> consultarLotesPendientes(String tenantName, String jod_id, String status,
             DynamoDbClient client) {
-        Map<String, String> expName = Map.of("#pk", "tenant_id",
-                "#sk", "job_id",
+        Map<String, String> expName = Map.of("#pk", "tenant-name",
+                "#sk", "lote-job-id",
                 "#status", "estado");
 
         Map<String, AttributeValue> expValues = Map.of(
@@ -159,7 +160,7 @@ public class ImplUseCaseDynamoDB implements IuseCaseDynamoDB {
     @Override
     public List<Map<String, String>> consultarReportesPendientes(String tenantName, String poolUserId, String status,
             DynamoDbClient client) {
-        Map<String, String> expName = Map.of("#pk", "tenant_id",
+        Map<String, String> expName = Map.of("#pk", "tenant-name",
                 "#poolId", "pool_user_id",
                 "#status", "estado");
 

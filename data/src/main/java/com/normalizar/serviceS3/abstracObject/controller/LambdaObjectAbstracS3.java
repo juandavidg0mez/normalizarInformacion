@@ -17,6 +17,15 @@ import com.normalizar.serviceS3.abstracObject.domian.ResponseObject;
 import com.normalizar.serviceS3.abstracObject.useCase.IUseCaseObjectAbstracS3;
 import com.normalizar.serviceS3.abstracObject.useCase.impl.ImplObjectAbstracS3;
 
+
+/**
+ * Clase LambdaObjectAbstracS3
+ * ---------------------------
+ * Esta clase implementa un manejador de AWS Lambda para consultar objetos en S3.
+ * La Lambda se invoca desde API Gateway, recibe un JSON con un "s3Key",
+ * consulta el objeto en S3 a través de un caso de uso y devuelve la respuesta en JSON.
+ */
+
 public class LambdaObjectAbstracS3 implements RequestStreamHandler {
     private ObjectMapper objectMapper = new ObjectMapper();
     private IUseCaseObjectAbstracS3 iUseCaseObjectAbstracS3;
@@ -24,6 +33,14 @@ public class LambdaObjectAbstracS3 implements RequestStreamHandler {
     public LambdaObjectAbstracS3() {
         this.iUseCaseObjectAbstracS3 = new ImplObjectAbstracS3();
     }
+
+        /**
+     * Método principal que AWS Lambda ejecuta cuando recibe una invocación.
+     *
+     * @param input   Flujo de entrada con el evento JSON recibido desde API Gateway
+     * @param output  Flujo de salida donde se escribe la respuesta a devolver
+     * @param context Contexto de la ejecución de Lambda (información de logs, requestId, etc.)
+     */
 
     @Override
     public void handleRequest(InputStream input, OutputStream output, Context context) throws IOException {

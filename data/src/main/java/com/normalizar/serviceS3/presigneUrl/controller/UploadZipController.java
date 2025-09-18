@@ -19,12 +19,41 @@ import com.normalizar.serviceS3.presigneUrl.domain.dto.DtoUploadZip;
 import com.normalizar.serviceS3.presigneUrl.useCase.IUseCasePresignedUrl;
 import com.normalizar.serviceS3.presigneUrl.useCase.Impl.ImplUseCasePresignedUrl;
 
+/**
+ * Controlador AWS Lambda encargado de recibir un archivo ZIP (en base64),
+ * decodificarlo y subirlo a S3 mediante el caso de uso {@link IUseCasePresignedUrl}.
+ * Además, registra la metadata en DynamoDB para seguimiento del proceso.
+ *
+ * Flujo:
+ * 1. Recibe el evento de API Gateway con un body JSON.
+ * 2. Convierte el JSON en {@link DtoUploadZip}.
+ * 3. Decodifica el archivo (base64 → bytes → InputStream).
+ * 4. Construye un {@link PresignedUrl} con toda la metadata.
+ * 5. Llama al caso de uso para subir el archivo.
+ * 6. Retorna una respuesta JSON estandarizada con estado HTTP.
+ */
 public class UploadZipController implements RequestStreamHandler{
     private static final ObjectMapper objectMapper = new ObjectMapper();
     private IUseCasePresignedUrl iUseCasePresignedUrl;
     public UploadZipController(){
         this.iUseCasePresignedUrl = new ImplUseCasePresignedUrl();
     }
+
+        /**
+     * Maneja la petición entrante desde API Gateway.
+     *
+     * @param input   {@link InputStream} → Stream con el evento JSON recibido de API Gateway.
+     * @param output  {@link OutputStream} → Stream donde se debe escribir la respuesta.
+     * @param context {@link Context} → Contexto de ejecución de AWS Lambda (logs, timeouts, etc).
+     * 
+     * @throws IOException si ocurre un error al procesar la entrada/salida.
+     * 
+     * Intencionalidad:
+     * - Parsear el evento entrante.
+     * - Transformar el archivo base64 a InputStream.
+     * - Delegar la subida al caso de uso.
+     * - Construir y retornar la respuesta HTTP en formato JSON.
+     */
 
     @Override
     public void handleRequest(InputStream input, OutputStream output, Context context) throws IOException {
