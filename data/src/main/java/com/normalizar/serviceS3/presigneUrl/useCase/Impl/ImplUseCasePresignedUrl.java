@@ -43,9 +43,9 @@ public class ImplUseCasePresignedUrl implements IUseCasePresignedUrl {
                     presignedUrl.getUserPoolId(),
                     presignedUrl.getActivo(),
                     presignedUrl.getFileName());
-            String jobId = UUID.randomUUID().toString();
+      
             String timestamp = Instant.now().toString();
-
+            String jobId = UUID.randomUUID().toString() + "#"+timestamp + "#" + presignedUrl.getUserPoolId();
             Map<String, String> jobIdMetadata= Map.of("jobId" , jobId);
             PutObjectRequest putObjectRequest = PutObjectRequest.builder()
                     .bucket("my-spring-bucket-eligomez")
@@ -59,7 +59,7 @@ public class ImplUseCasePresignedUrl implements IUseCasePresignedUrl {
             metaDataReport.setTenantName(presignedUrl.getTenantName());
             metaDataReport.setActivo(presignedUrl.getActivo());
             metaDataReport.setPoolUserId(presignedUrl.getUserPoolId());
-            metaDataReport.setLoteJobId(jobId +"#"+timestamp + "#" + presignedUrl.getUserPoolId());
+            metaDataReport.setLoteJobId(jobId);
             metaDataReport.setType("ZIP");
             metaDataReport.setTimestamp(timestamp);
             metaDataReport.setS3ZipPath(keyS3);

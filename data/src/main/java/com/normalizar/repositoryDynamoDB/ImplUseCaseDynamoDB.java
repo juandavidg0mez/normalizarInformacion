@@ -86,7 +86,7 @@ public class ImplUseCaseDynamoDB implements IuseCaseDynamoDB {
     @Override
     public void UpdateItemDbBrainStatus(String jobId, String tenantName, String status, DynamoDbClient client) {
         UpdateItemRequest updateItemRequest = UpdateItemRequest.builder()
-                .tableName("report_SQS_brain")
+                .tableName("report-table-brain")
                 .key(Map.of(
                         "tenant-name", AttributeValue.builder().s(tenantName).build(),
                         "lote-job-id", AttributeValue.builder().s(jobId).build()))
@@ -103,7 +103,7 @@ public class ImplUseCaseDynamoDB implements IuseCaseDynamoDB {
     public void UpdateItemDbBrainStausPath(String jobId, String tenantName, String status, String pathS3Html,
             DynamoDbClient client) {
         UpdateItemRequest uoUpdateItemRequest = UpdateItemRequest.builder()
-                .tableName("report_SQS_brain")
+                .tableName("report-table-brain")
                 .key(Map.of(
                         "tenant-name", AttributeValue.builder().s(tenantName).build(),
                         "lote-job-id", AttributeValue.builder().s(jobId).build()))
