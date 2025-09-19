@@ -67,7 +67,7 @@ public class ImplMappingUseCase implements ImappingUseCase {
             // pirnciplal es muy parecido a lo que hicimos en la estrucutra del Script de
             // normalizacion
 
-            // modelo.put("InformacionGeneral", informacionGeneral);
+            modelo.put("InformacionGeneral", informacionGeneral);
 
             // Seccion de encabezado
             // Map<String, String> headerData = new HashMap<>();

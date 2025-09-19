@@ -129,7 +129,7 @@ public class ImplUseCaseDynamoDB implements IuseCaseDynamoDB {
         );
 
         QueryRequest queryRequest = QueryRequest.builder()
-                .tableName("report_SQS_brain")
+                .tableName("report-table-brain")
                 .keyConditionExpression("#pk = :pkVal AND begins_with(#sk, :skVal)")
                 .filterExpression("#status = :estadoVal")
                 .expressionAttributeNames(expName)
@@ -171,7 +171,7 @@ public class ImplUseCaseDynamoDB implements IuseCaseDynamoDB {
 
         );
         QueryRequest queryRequest = QueryRequest.builder()
-                .tableName("report_SQS_brain")
+                .tableName("report-table-brain")
                 // Esta clase solo acepta una clave de partición en la KeyCondition
                 //Puede haber condiciones sobre la SOT KEY
                 .keyConditionExpression("#pk = :pkVal")

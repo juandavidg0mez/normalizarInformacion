@@ -19,7 +19,7 @@ import software.amazon.awssdk.services.s3.model.GetObjectRequest;
 import software.amazon.awssdk.services.s3.model.HeadObjectRequest;
 import software.amazon.awssdk.services.s3.model.HeadObjectResponse;
 import software.amazon.awssdk.services.s3.model.PutObjectRequest;
-
+// gestiona todos los ducmentos y actualiza esl estado del documento  que descomprime entonce no actualiza nada mas 
 public class ImpleIUseCaseZip implements IUseCaseZip {
     private static final String BUCKET = "my-spring-bucket-eligomez";
     private static final String UPLOADS_EXCEL_A_S3 = "uploadsExcels";

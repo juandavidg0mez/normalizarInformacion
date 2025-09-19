@@ -10,14 +10,12 @@ com\normalizar\domain\GraficaDataExi.class
 com\normalizar\teamplateEvent\useCase\impl\ImpleUseCaseTemplateEvent.class
 com\normalizar\domain\GraficaData.class
 com\normalizar\serviceS3\presigneUrl\domain\dto\DtoUploadZip.class
-com\normalizar\controller\LambdaPipeLiveV2.class
 com\normalizar\serviceS3\presigneUrl\useCase\Impl\ImplUseCasePresignedUrl.class
 com\normalizar\domain\ItemQuery.class
 com\normalizar\serviceS3\presigneUrl\controller\UploadZipController.class
 com\normalizar\controller\LambdaQueryFilesStatus.class
 com\normalizar\serviceS3\abstracObject\useCase\impl\ImplObjectAbstracS3.class
 com\normalizar\serviceS3\abstracObject\domian\ResponseObject.class
-com\normalizar\controller\UploadZipController\LambdaToS3UploadZip.class
 com\normalizar\domain\ResponseReport.class
 com\normalizar\thymeleaRender\ThymeleaRenderTeamplate.class
 com\normalizar\domain\ConclusionesObjetoFinal.class
