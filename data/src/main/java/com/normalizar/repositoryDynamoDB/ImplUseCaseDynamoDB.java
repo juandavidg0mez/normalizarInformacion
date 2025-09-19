@@ -118,7 +118,7 @@ public class ImplUseCaseDynamoDB implements IuseCaseDynamoDB {
     public List<Map<String, String>> consultarLotesPendientes(String tenantName, String jod_id, String status,
             DynamoDbClient client) {
         Map<String, String> expName = Map.of("#pk", "tenant-name",
-                "#sk", "lote-job-id",
+                "#sk", "user_pool_id",
                 "#status", "estado");
 
         Map<String, AttributeValue> expValues = Map.of(
@@ -161,7 +161,7 @@ public class ImplUseCaseDynamoDB implements IuseCaseDynamoDB {
     public List<Map<String, String>> consultarReportesPendientes(String tenantName, String poolUserId, String status,
             DynamoDbClient client) {
         Map<String, String> expName = Map.of("#pk", "tenant-name",
-                "#poolId", "pool_user_id",
+                "#poolId", "user_pool_id",
                 "#status", "estado");
 
         Map<String, AttributeValue> expValues = Map.of(
