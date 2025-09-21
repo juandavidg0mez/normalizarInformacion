@@ -36,8 +36,8 @@ public class ImplUseCaseDynamoDB implements IuseCaseDynamoDB {
         try {
 
             Map<String, AttributeValue> item = new HashMap<>();
-            addAttributeIfNotNull(item, "tenant-name", metaDataReport.getTenantName());
-            addAttributeIfNotNull(item, "lote-job-id", metaDataReport.getLoteJobId());
+            addAttributeIfNotNull(item, "tenant_name", metaDataReport.getTenantName());
+            addAttributeIfNotNull(item, "lote_job_id", metaDataReport.getLoteJobId());
             addAttributeIfNotNull(item, "activo", metaDataReport.getActivo());
             addAttributeIfNotNull(item, "type", metaDataReport.getType());
             addAttributeIfNotNull(item, "user_pool_id", metaDataReport.getPoolUserId());
@@ -49,7 +49,7 @@ public class ImplUseCaseDynamoDB implements IuseCaseDynamoDB {
             addAttributeIfNotNull(item, "fecha_creacion", metaDataReport.getTimestamp());
             addAttributeIfNotNull(item, "estado", metaDataReport.getEstado());
 
-            if (!item.containsKey("tenant-name") || !item.containsKey("lote-job-id")) {
+            if (!item.containsKey("tenant_name") || !item.containsKey("lote_job_id")) {
                 throw new IllegalArgumentException("la clave de particion 'tenant-name' y 'lote-job-id' no pueden ser nuls");
             }
 
@@ -88,8 +88,8 @@ public class ImplUseCaseDynamoDB implements IuseCaseDynamoDB {
         UpdateItemRequest updateItemRequest = UpdateItemRequest.builder()
                 .tableName("report-table-brain")
                 .key(Map.of(
-                        "tenant-name", AttributeValue.builder().s(tenantName).build(),
-                        "lote-job-id", AttributeValue.builder().s(jobId).build()))
+                        "tenant_name", AttributeValue.builder().s(tenantName).build(),
+                        "lote_job_id", AttributeValue.builder().s(jobId).build()))
                 // Update expression
                 .updateExpression("SET estado = :statusVal")
                 .expressionAttributeValues(Map.of(
@@ -105,8 +105,8 @@ public class ImplUseCaseDynamoDB implements IuseCaseDynamoDB {
         UpdateItemRequest uoUpdateItemRequest = UpdateItemRequest.builder()
                 .tableName("report-table-brain")
                 .key(Map.of(
-                        "tenant-name", AttributeValue.builder().s(tenantName).build(),
-                        "lote-job-id", AttributeValue.builder().s(jobId).build()))
+                        "tenant_name", AttributeValue.builder().s(tenantName).build(),
+                        "lote_job_id", AttributeValue.builder().s(jobId).build()))
                 .updateExpression("SET estado = :statusVal, path_HTML_S3 = :spath_html")
                 .expressionAttributeValues(Map.of(":statusVal", AttributeValue.builder().s(status).build(),
                         ":spath_html", AttributeValue.builder().s(pathS3Html).build()))
@@ -117,7 +117,7 @@ public class ImplUseCaseDynamoDB implements IuseCaseDynamoDB {
     @Override
     public List<Map<String, String>> consultarLotesPendientes(String tenantName, String jod_id, String status,
             DynamoDbClient client) {
-        Map<String, String> expName = Map.of("#pk", "tenant-name",
+        Map<String, String> expName = Map.of("#pk", "tenant_name",
                 "#sk", "user_pool_id",
                 "#status", "estado");
 
@@ -160,7 +160,7 @@ public class ImplUseCaseDynamoDB implements IuseCaseDynamoDB {
     @Override
     public List<Map<String, String>> consultarReportesPendientes(String tenantName, String poolUserId, String status,
             DynamoDbClient client) {
-        Map<String, String> expName = Map.of("#pk", "tenant-name",
+        Map<String, String> expName = Map.of("#pk", "tenant_name",
                 "#poolId", "user_pool_id",
                 "#status", "estado");
 
