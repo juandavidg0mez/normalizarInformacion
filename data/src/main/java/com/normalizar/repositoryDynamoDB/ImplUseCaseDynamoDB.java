@@ -5,6 +5,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.normalizar.repositoryDynamoDB.entity.MetaDataReport;
 
 import software.amazon.awssdk.services.dynamodb.DynamoDbClient;
@@ -13,9 +16,12 @@ import software.amazon.awssdk.services.dynamodb.model.DynamoDbException;
 import software.amazon.awssdk.services.dynamodb.model.PutItemRequest;
 import software.amazon.awssdk.services.dynamodb.model.QueryRequest;
 import software.amazon.awssdk.services.dynamodb.model.QueryResponse;
+import software.amazon.awssdk.services.dynamodb.model.ReturnValue;
 import software.amazon.awssdk.services.dynamodb.model.UpdateItemRequest;
+import software.amazon.awssdk.services.dynamodb.model.UpdateItemResponse;
 
 public class ImplUseCaseDynamoDB implements IuseCaseDynamoDB {
+    private static final Logger logger = LoggerFactory.getLogger(ImplUseCaseDynamoDB.class);
 
     @Override
     public String CreateItem(String tenant, String poolUserId) {
@@ -50,7 +56,8 @@ public class ImplUseCaseDynamoDB implements IuseCaseDynamoDB {
             addAttributeIfNotNull(item, "estado", metaDataReport.getEstado());
 
             if (!item.containsKey("tenant_name") || !item.containsKey("lote_job_id")) {
-                throw new IllegalArgumentException("la clave de particion 'tenant-name' y 'lote-job-id' no pueden ser nuls");
+                throw new IllegalArgumentException(
+                        "la clave de particion 'tenant-name' y 'lote-job-id' no pueden ser nuls");
             }
 
             PutItemRequest putItemRequest = PutItemRequest.builder()
@@ -114,24 +121,38 @@ public class ImplUseCaseDynamoDB implements IuseCaseDynamoDB {
         client.updateItem(uoUpdateItemRequest);
     }
 
+    // esta consulta a la base de datos tiene como proposito retornar los lotes o
+    // los zip de eltado exp DESCOMPRIMIDO
+    // por otro lado debemos tener encuenta que solo retorna los ZIP por que es TYPE
+    // es ese
     @Override
-    public List<Map<String, String>> consultarLotesPendientes(String tenantName, String jod_id, String status,
+    public List<Map<String, String>> consultarLotesPendientes(String tenantName, String job_id, String status,
+            String tipo,
             DynamoDbClient client) {
-        Map<String, String> expName = Map.of("#pk", "tenant_name",
-                "#sk", "user_pool_id",
-                "#status", "estado");
+        Map<String, String> expName = Map.of(
+                "#pk", "tenant_name",
+                "#sk", "lote_job_id",
+                "#estado", "estado",
+                "#tipo", "type");
 
-        Map<String, AttributeValue> expValues = Map.of(
-                ":pkVal", AttributeValue.builder().s(tenantName).build(),
-                ":skVal", AttributeValue.builder().s(jod_id).build(),
-                ":estadoVal", AttributeValue.builder().s(status).build()
+        Map<String, AttributeValue> expValues = new HashMap<>();
+        expValues.put(":pkVal", AttributeValue.builder().s(tenantName).build());
+        expValues.put(":estadoVal", AttributeValue.builder().s(status).build());
+        expValues.put(":tipoVal", AttributeValue.builder().s(tipo).build());
 
-        );
+        // Si el job_id es opcional
+        String keyCondition;
+        if (job_id != null && !job_id.isEmpty()) {
+            expValues.put(":skVal", AttributeValue.builder().s(job_id).build());
+            keyCondition = "#pk = :pkVal AND begins_with(#sk, :skVal)";
+        } else {
+            keyCondition = "#pk = :pkVal"; // Trae todos los jobs del tenant
+        }
 
         QueryRequest queryRequest = QueryRequest.builder()
                 .tableName("report-table-brain")
-                .keyConditionExpression("#pk = :pkVal AND begins_with(#sk, :skVal)")
-                .filterExpression("#status = :estadoVal")
+                .keyConditionExpression(keyCondition)
+                .filterExpression("#estado = :estadoVal AND #tipo = :tipoVal")
                 .expressionAttributeNames(expName)
                 .expressionAttributeValues(expValues)
                 .build();
@@ -173,7 +194,7 @@ public class ImplUseCaseDynamoDB implements IuseCaseDynamoDB {
         QueryRequest queryRequest = QueryRequest.builder()
                 .tableName("report-table-brain")
                 // Esta clase solo acepta una clave de partición en la KeyCondition
-                //Puede haber condiciones sobre la SOT KEY
+                // Puede haber condiciones sobre la SOT KEY
                 .keyConditionExpression("#pk = :pkVal")
                 // Otros atributos van aca para hacer la consulta
                 .filterExpression("#poolId = :poolIdVal AND #status = :estadoVal")
@@ -199,6 +220,48 @@ public class ImplUseCaseDynamoDB implements IuseCaseDynamoDB {
         }
 
         return resultado;
+    }
+
+    // este metodo actualiza el estado de un Item como parametros debe tener
+    // partition key and sort key y el nuevo estado
+
+    @Override
+    public void UpdateItemStatus(String sortKey_jobId, String tenantName, String status,
+            DynamoDbClient client) {
+
+        // Definimos la llave primaria tenemos que recordar que la llave primaria es
+        // compuesta por PARTITION KEY Y SORT KEY
+        Map<String, AttributeValue> keyToUpdate = Map.of(
+                "tenant_name", AttributeValue.builder().s(tenantName).build(),
+                "lote_job_id", AttributeValue.builder().s(sortKey_jobId).build());
+
+        Map<String, String> aliasName = Map.of(
+                "#estado", "estado");
+
+        Map<String, AttributeValue> expressionValues = Map.of(
+                ":statusVal", AttributeValue.builder().s(status).build());
+        try {
+            UpdateItemRequest updateItemRequest = UpdateItemRequest.builder()
+                    .tableName("report-table-brain")
+                    .key(keyToUpdate)
+                    // Update expression
+                    .updateExpression("SET #estado = :statusVal")
+                    .expressionAttributeNames(aliasName)
+                    .expressionAttributeValues(expressionValues)
+                    .returnValues(ReturnValue.ALL_NEW)
+                    .build();
+
+            UpdateItemResponse response = client.updateItem(updateItemRequest);
+            logger.info("El ítem se actualizó correctamente. Nuevo estado: {}",
+                    response.attributes().get("estado").s());
+
+        } catch (Exception e) {
+            logger.error("Error al actualizar el ítem en DynamoDB: {}", e.getMessage());
+            // Aquí podrías relanzar la excepción o manejarla según la lógica de tu
+            // aplicación
+            throw e;
+        }
+
     }
 
 }

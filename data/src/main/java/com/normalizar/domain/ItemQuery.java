@@ -11,4 +11,5 @@ public class ItemQuery {
     private String tenant_name;
     private String job_id;
     private String estado;
+    private String type;
 }

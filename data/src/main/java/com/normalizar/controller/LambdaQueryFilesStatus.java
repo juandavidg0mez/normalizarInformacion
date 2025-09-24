@@ -37,9 +37,10 @@ public class LambdaQueryFilesStatus implements RequestStreamHandler {
             String tenant_name = itemQuery.getTenant_name();
             String job_id = itemQuery.getJob_id();
             String estado = itemQuery.getEstado();
+            String type = itemQuery.getType();
 
-            List<Map<String, String>> items = this.iuseCaseDynamoDB.consultarLotesPendientes(tenant_name, job_id,
-                    estado,
+            List<Map<String, String>> items = this.iuseCaseDynamoDB.consultarLotesPendientes(tenant_name, job_id, 
+                    estado, type,
                     dynamoDbClient);
 
             Map<String, String> headers = new HashMap<>();
