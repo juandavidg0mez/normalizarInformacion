@@ -10,13 +10,13 @@ import org.jsoup.nodes.Element;
 import org.xhtmlrenderer.layout.SharedContext;
 import org.xhtmlrenderer.pdf.ITextRenderer;
 
-import com.normalizar.controller.RenderPdfLambda;
+import com.normalizar.controller.UpdateFileHTML;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class ImpleCaseMemory implements ItemplateCase {
-    private static final Logger logger = LoggerFactory.getLogger(RenderPdfLambda.class);
+    private static final Logger logger = LoggerFactory.getLogger(UpdateFileHTML.class);
 
     @Override
     public String selectTemplate(String activo) {

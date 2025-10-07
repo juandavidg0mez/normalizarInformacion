@@ -1,10 +1,11 @@
 package com.normalizar.controller;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+// import org.slf4j.Logger;
+// import org.slf4j.LoggerFactory;
 
 import com.amazonaws.services.lambda.runtime.Context;
 import com.amazonaws.services.lambda.runtime.RequestHandler;
@@ -18,7 +19,7 @@ import com.normalizar.repositoryDynamoDB.IuseCaseDynamoDB;
 import software.amazon.awssdk.services.dynamodb.DynamoDbClient;
 
 public class LambdaUpdateItemStatus implements RequestHandler<APIGatewayV2HTTPEvent, APIGatewayV2HTTPResponse> {
-    private static final Logger logger = LoggerFactory.getLogger(LambdaUpdateItemStatus.class);
+
     private static final ObjectMapper objectMapper = new ObjectMapper();
     private IuseCaseDynamoDB iuseCaseDynamoDB;
     private DynamoDbClient dynamoDbClient;
@@ -32,26 +33,32 @@ public class LambdaUpdateItemStatus implements RequestHandler<APIGatewayV2HTTPEv
     public APIGatewayV2HTTPResponse handleRequest(APIGatewayV2HTTPEvent event, Context context) {
         try {
 
-            UpdateItemClass updateItemClass = objectMapper.readValue(event.getBody(), UpdateItemClass.class);
+            List<UpdateItemClass> updates = objectMapper.readValue(
+                    event.getBody(),
+                    objectMapper.getTypeFactory().constructCollectionType(List.class, UpdateItemClass.class));
+
+   
             
-            String jobId = updateItemClass.getSortKey();
-            String tenantName = updateItemClass.getTenantName();
-            String status = updateItemClass.getStatusValue();
-            
-            this.iuseCaseDynamoDB.UpdateItemStatus(jobId, tenantName, status, dynamoDbClient);
-            
-            context.getLogger().log(
-                    "Se actualizo el item con jobId: " + jobId + ", tenantName: " + tenantName + ", status: " + status);
-            logger.info("Se actualizo el item con jobId: {}, tenantName: {}, status: {}", jobId, tenantName, status);
-            
+        // Recorrer y actualizar cada item
+        for (UpdateItemClass update : updates) {
+            iuseCaseDynamoDB.UpdateItemStatus(
+                update.getSortKey(),
+                update.getTenantName(),
+                update.getStatusValue(),
+                dynamoDbClient
+            );
+            context.getLogger().log("Actualizado: " + update.getSortKey());
+        }
+
+
             Map<String, String> headers = new HashMap<>();
-            
+
             headers.put("Content-Type", "application/json");
             headers.put("Access-Control-Allow-Origin", "*");
 
             return APIGatewayV2HTTPResponse.builder()
                     .withStatusCode(200)
-                    .withBody(objectMapper.writeValueAsString("{\"message\": \"Item actualizado correctamente\"}"))
+                    .withBody(objectMapper.writeValueAsString(Map.of("message", "Items actualizados correctamente")))
                     .withHeaders(headers)
                     .build();
 

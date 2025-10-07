@@ -22,12 +22,12 @@ com\normalizar\domain\ResponseReport.class
 com\normalizar\thymeleaRender\ThymeleaRenderTeamplate.class
 com\normalizar\domain\ConclusionesObjetoFinal.class
 com\normalizar\config\descomZip\Utils\domain\ZipFileToLambda.class
+com\normalizar\controller\UpdateFileHTML.class
 com\normalizar\config\ConfigS3Service.class
 com\normalizar\serviceS3\abstracObject\controller\LambdaObjectAbstracS3.class
 com\normalizar\templateMemori\ImpleCaseMemory.class
 com\normalizar\repositoryDynamoDB\IuseCaseDynamoDB.class
 com\normalizar\domain\ResponseObjetoFinal.class
-com\normalizar\controller\RenderPdfLambda.class
 com\normalizar\config\descomZip\Utils\useCase\impl\ImpleIUseCaseZip.class
 com\normalizar\Main.class
 com\normalizar\serviceS3\abstracObject\domian\RequestObject.class
