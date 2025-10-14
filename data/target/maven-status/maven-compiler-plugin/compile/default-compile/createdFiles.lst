@@ -13,6 +13,7 @@ com\normalizar\serviceS3\presigneUrl\domain\dto\DtoUploadZip.class
 com\normalizar\domain\UpdateItemClass.class
 com\normalizar\serviceS3\presigneUrl\useCase\Impl\ImplUseCasePresignedUrl.class
 com\normalizar\domain\ItemQuery.class
+com\normalizar\serviceS3\uploadFileReportFinal\domain\RequestUploadFile.class
 com\normalizar\controller\LambdaUpdateItemStatus.class
 com\normalizar\serviceS3\presigneUrl\controller\UploadZipController.class
 com\normalizar\controller\LambdaQueryFilesStatus.class
@@ -27,11 +28,14 @@ com\normalizar\config\ConfigS3Service.class
 com\normalizar\serviceS3\abstracObject\controller\LambdaObjectAbstracS3.class
 com\normalizar\templateMemori\ImpleCaseMemory.class
 com\normalizar\repositoryDynamoDB\IuseCaseDynamoDB.class
+com\normalizar\serviceS3\uploadFileReportFinal\useCase\IUseCaseUploadFinalReport.class
+com\normalizar\serviceS3\uploadFileReportFinal\useCase\impl\ImplUseCaseUploadFile.class
 com\normalizar\domain\ResponseObjetoFinal.class
 com\normalizar\config\descomZip\Utils\useCase\impl\ImpleIUseCaseZip.class
 com\normalizar\Main.class
 com\normalizar\serviceS3\abstracObject\domian\RequestObject.class
 com\normalizar\serviceS3\UseCase\IuseCaseS3Service.class
+com\normalizar\serviceS3\uploadFileReportFinal\controller\LambdaUploadFileReportFinal.class
 com\normalizar\controller\UpdateConlusionsLambda.class
 com\normalizar\controller\LambdaQueryReportsList.class
 com\normalizar\domain\QueryReportList.class

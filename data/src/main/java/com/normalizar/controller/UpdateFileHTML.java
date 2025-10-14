@@ -2,7 +2,6 @@ package com.normalizar.controller;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
-import java.nio.charset.StandardCharsets;
 import java.util.Base64;
 import java.util.HashMap;
 import java.util.Map;
@@ -49,7 +48,7 @@ public class UpdateFileHTML implements RequestHandler<APIGatewayV2HTTPEvent, API
                         // Devolver respuesta 200 con el resultado
                         Map<String, String> headers = new HashMap<>();
 
-                        headers.put("Content-Type", "application/json");
+                        headers.put("Content-Type",  "text/html; charset=UTF-8");
                         headers.put("Access-Control-Allow-Origin", "*");
 
                         return APIGatewayV2HTTPResponse.builder()

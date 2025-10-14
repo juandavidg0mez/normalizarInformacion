@@ -38,6 +38,10 @@ C:\Users\jdgomez\Documents\certificados\ca\ServicioReportesS3\Normalizacion\norm
 C:\Users\jdgomez\Documents\certificados\ca\ServicioReportesS3\Normalizacion\normalizarInformacion\data\src\main\java\com\normalizar\serviceS3\presigneUrl\domain\PresignedUrl.java
 C:\Users\jdgomez\Documents\certificados\ca\ServicioReportesS3\Normalizacion\normalizarInformacion\data\src\main\java\com\normalizar\serviceS3\presigneUrl\useCase\Impl\ImplUseCasePresignedUrl.java
 C:\Users\jdgomez\Documents\certificados\ca\ServicioReportesS3\Normalizacion\normalizarInformacion\data\src\main\java\com\normalizar\serviceS3\presigneUrl\useCase\IUseCasePresignedUrl.java
+C:\Users\jdgomez\Documents\certificados\ca\ServicioReportesS3\Normalizacion\normalizarInformacion\data\src\main\java\com\normalizar\serviceS3\uploadFileReportFinal\controller\LambdaUploadFileReportFinal.java
+C:\Users\jdgomez\Documents\certificados\ca\ServicioReportesS3\Normalizacion\normalizarInformacion\data\src\main\java\com\normalizar\serviceS3\uploadFileReportFinal\domain\RequestUploadFile.java
+C:\Users\jdgomez\Documents\certificados\ca\ServicioReportesS3\Normalizacion\normalizarInformacion\data\src\main\java\com\normalizar\serviceS3\uploadFileReportFinal\useCase\impl\ImplUseCaseUploadFile.java
+C:\Users\jdgomez\Documents\certificados\ca\ServicioReportesS3\Normalizacion\normalizarInformacion\data\src\main\java\com\normalizar\serviceS3\uploadFileReportFinal\useCase\IUseCaseUploadFinalReport.java
 C:\Users\jdgomez\Documents\certificados\ca\ServicioReportesS3\Normalizacion\normalizarInformacion\data\src\main\java\com\normalizar\serviceS3\UseCase\impl\ImplUseCaseS3Service.java
 C:\Users\jdgomez\Documents\certificados\ca\ServicioReportesS3\Normalizacion\normalizarInformacion\data\src\main\java\com\normalizar\serviceS3\UseCase\IuseCaseS3Service.java
 C:\Users\jdgomez\Documents\certificados\ca\ServicioReportesS3\Normalizacion\normalizarInformacion\data\src\main\java\com\normalizar\teamplateEvent\controller\LambdaTemplateEvent.java
