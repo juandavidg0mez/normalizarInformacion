@@ -10,14 +10,16 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class MetaDataReport {
-    private String tenant_id;
-    private String report_id;// Estandar con el que se elaboro el teamplate del reporte
+    private String tenantName;
+    private String loteJobId;
+    private String type;
     private String activo;
     private String poolUserId;
     private String s3JsonPath;
     private String s3PdfPath;
+    private String s3ZipPath;
+    private String s3ZipFileFinalReport;
+    private String s3FinalPdfReport;
     private String timestamp;
     private String estado;
-
-
 }

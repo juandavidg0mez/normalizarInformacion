@@ -13,5 +13,6 @@ public class PdfRenderRequest {
     private String tenant_id;
     private String poolUserId;
     private String fileName;
+    private String activo;
 
 }
