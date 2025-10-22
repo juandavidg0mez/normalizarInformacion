@@ -1,9 +1,8 @@
 package com.normalizar.utility.impl;
 
+
 import java.io.IOException;
-import java.time.Instant;
-import java.time.ZoneId;
-import java.time.format.DateTimeFormatter;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -12,8 +11,7 @@ import java.util.Map;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-
-import com.normalizar.utility.ImappingUseCase;
+import com.normalizar.strategy.MappingStrategyModel;
 
 // 
 //      * Parses the raw JSON string and maps its content to a structured Map
@@ -24,7 +22,7 @@ import com.normalizar.utility.ImappingUseCase;
 //      * @throws IOException If JSON parsing fails.
 // 
 
-public class ImplMappingUseCase implements ImappingUseCase {
+public class ImplMappingCt implements MappingStrategyModel {
     private static final ObjectMapper objectMapper = new ObjectMapper();
 
     @Override

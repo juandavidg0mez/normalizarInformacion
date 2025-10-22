@@ -10,16 +10,17 @@ import java.util.Map;
 
 import com.amazonaws.services.lambda.runtime.Context;
 import com.amazonaws.services.lambda.runtime.events.models.s3.S3EventNotification.S3EventNotificationRecord;
+import com.normalizar.factory.ModeloMappingFactory;
 // import com.normalizar.repositoryDynamoDB.ImplUseCaseDynamoDB;
 // import com.normalizar.repositoryDynamoDB.IuseCaseDynamoDB;
 import com.normalizar.serviceS3.UseCase.IuseCaseS3Service;
 import com.normalizar.serviceS3.UseCase.impl.ImplUseCaseS3Service;
+import com.normalizar.strategy.MappingStrategyModel;
 import com.normalizar.teamplateEvent.useCase.UseCaseTemplateEvent;
 import com.normalizar.templateMemori.ImpleCaseMemory;
 import com.normalizar.templateMemori.ItemplateCase;
 import com.normalizar.thymeleaRender.ThymeleaRenderTeamplate;
-import com.normalizar.utility.ImappingUseCase;
-import com.normalizar.utility.impl.ImplMappingUseCase;
+
 
 //import software.amazon.awssdk.services.dynamodb.DynamoDbClient;
 import software.amazon.awssdk.services.s3.S3Client;
@@ -34,7 +35,7 @@ import software.amazon.awssdk.services.s3.model.GetObjectRequest;
 public class ImpleUseCaseTemplateEvent implements UseCaseTemplateEvent {
     private S3Client s3Client;
     // private DynamoDbClient client;
-    private ImappingUseCase imappingUseCase;
+
     private ItemplateCase itemplateCase;
     private IuseCaseS3Service iuseCaseS3Service;
 
@@ -43,7 +44,7 @@ public class ImpleUseCaseTemplateEvent implements UseCaseTemplateEvent {
     public ImpleUseCaseTemplateEvent() {
         this.itemplateCase = new ImpleCaseMemory();
         this.s3Client = S3Client.create();
-        this.imappingUseCase = new ImplMappingUseCase();
+
         this.iuseCaseS3Service = new ImplUseCaseS3Service();
         // this.iuseCaseDynamoDB = new ImplUseCaseDynamoDB();
         // this.DynamoCliente = DynamoDbClient.create();
@@ -88,16 +89,20 @@ public class ImpleUseCaseTemplateEvent implements UseCaseTemplateEvent {
                         + " fileName: " + fileName + " jobID: " + jobID + " fileNameHtml: " + fileNameHtml);
                 byte[] html_file_memoria = html_file.readAllBytes();
                 String jsonString = new String(html_file_memoria, StandardCharsets.UTF_8);
-                Map<String, Object> modelo = imappingUseCase.mapJsonToThymeleafModel(jsonString);
-                String template = itemplateCase.selectTemplate(activo);
 
-                String html = ThymeleaRenderTeamplate.render(template, modelo);
+                String activoEntrada = itemplateCase.selectTemplate(activo);
+
+                // Metodo Factory para obtener el modelo de mapeo
+                ModeloMappingFactory modeloFactory = new ModeloMappingFactory();
+                MappingStrategyModel imappingUseCase = modeloFactory.obtenerModeloToMapping(activoEntrada);
+                String html = ThymeleaRenderTeamplate.render(activoEntrada, imappingUseCase.mapJsonToThymeleafModel(jsonString));
+                // Subimos el archivo a S3
                 byte[] byteHtml = html.getBytes(StandardCharsets.UTF_8);
                 InputStream archivoHtml = new ByteArrayInputStream(byteHtml);
 
-                this.iuseCaseS3Service.uploaFile(poolUserId, tenantName, activo, archivoHtml, fileNameHtml, "text/html", jobID);
+                this.iuseCaseS3Service.uploaFile(poolUserId, tenantName, activo, archivoHtml, fileNameHtml,
+                        "text/html", jobID);
 
-                System.out.println(modelo);
                 System.out.println("Se creo el archivo en S3");
 
             } catch (Exception e) {
