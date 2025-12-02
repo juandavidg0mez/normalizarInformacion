@@ -21,6 +21,7 @@ C:\Users\jdgomez\Documents\certificados\ca\ServicioReportesS3\Normalizacion\norm
 C:\Users\jdgomez\Documents\certificados\ca\ServicioReportesS3\Normalizacion\normalizarInformacion\data\src\main\java\com\normalizar\domain\ResponseObjetoFinal.java
 C:\Users\jdgomez\Documents\certificados\ca\ServicioReportesS3\Normalizacion\normalizarInformacion\data\src\main\java\com\normalizar\domain\ResponseReport.java
 C:\Users\jdgomez\Documents\certificados\ca\ServicioReportesS3\Normalizacion\normalizarInformacion\data\src\main\java\com\normalizar\domain\UpdateItemClass.java
+C:\Users\jdgomez\Documents\certificados\ca\ServicioReportesS3\Normalizacion\normalizarInformacion\data\src\main\java\com\normalizar\factory\ModeloMappingFactory.java
 C:\Users\jdgomez\Documents\certificados\ca\ServicioReportesS3\Normalizacion\normalizarInformacion\data\src\main\java\com\normalizar\Main.java
 C:\Users\jdgomez\Documents\certificados\ca\ServicioReportesS3\Normalizacion\normalizarInformacion\data\src\main\java\com\normalizar\repositoryDynamoDB\entity\MetaDataReport.java
 C:\Users\jdgomez\Documents\certificados\ca\ServicioReportesS3\Normalizacion\normalizarInformacion\data\src\main\java\com\normalizar\repositoryDynamoDB\entity\UpdateConlucions.java
@@ -44,6 +45,7 @@ C:\Users\jdgomez\Documents\certificados\ca\ServicioReportesS3\Normalizacion\norm
 C:\Users\jdgomez\Documents\certificados\ca\ServicioReportesS3\Normalizacion\normalizarInformacion\data\src\main\java\com\normalizar\serviceS3\uploadFileReportFinal\useCase\IUseCaseUploadFinalReport.java
 C:\Users\jdgomez\Documents\certificados\ca\ServicioReportesS3\Normalizacion\normalizarInformacion\data\src\main\java\com\normalizar\serviceS3\UseCase\impl\ImplUseCaseS3Service.java
 C:\Users\jdgomez\Documents\certificados\ca\ServicioReportesS3\Normalizacion\normalizarInformacion\data\src\main\java\com\normalizar\serviceS3\UseCase\IuseCaseS3Service.java
+C:\Users\jdgomez\Documents\certificados\ca\ServicioReportesS3\Normalizacion\normalizarInformacion\data\src\main\java\com\normalizar\strategy\MappingStrategyModel.java
 C:\Users\jdgomez\Documents\certificados\ca\ServicioReportesS3\Normalizacion\normalizarInformacion\data\src\main\java\com\normalizar\teamplateEvent\controller\LambdaTemplateEvent.java
 C:\Users\jdgomez\Documents\certificados\ca\ServicioReportesS3\Normalizacion\normalizarInformacion\data\src\main\java\com\normalizar\teamplateEvent\useCase\impl\ImpleUseCaseTemplateEvent.java
 C:\Users\jdgomez\Documents\certificados\ca\ServicioReportesS3\Normalizacion\normalizarInformacion\data\src\main\java\com\normalizar\teamplateEvent\useCase\UseCaseTemplateEvent.java
@@ -51,5 +53,5 @@ C:\Users\jdgomez\Documents\certificados\ca\ServicioReportesS3\Normalizacion\norm
 C:\Users\jdgomez\Documents\certificados\ca\ServicioReportesS3\Normalizacion\normalizarInformacion\data\src\main\java\com\normalizar\templateMemori\ImpleCaseMemory.java
 C:\Users\jdgomez\Documents\certificados\ca\ServicioReportesS3\Normalizacion\normalizarInformacion\data\src\main\java\com\normalizar\templateMemori\ItemplateCase.java
 C:\Users\jdgomez\Documents\certificados\ca\ServicioReportesS3\Normalizacion\normalizarInformacion\data\src\main\java\com\normalizar\thymeleaRender\ThymeleaRenderTeamplate.java
-C:\Users\jdgomez\Documents\certificados\ca\ServicioReportesS3\Normalizacion\normalizarInformacion\data\src\main\java\com\normalizar\utility\ImappingUseCase.java
-C:\Users\jdgomez\Documents\certificados\ca\ServicioReportesS3\Normalizacion\normalizarInformacion\data\src\main\java\com\normalizar\utility\impl\ImplMappingUseCase.java
+C:\Users\jdgomez\Documents\certificados\ca\ServicioReportesS3\Normalizacion\normalizarInformacion\data\src\main\java\com\normalizar\utility\impl\ImplInterruptoresMap.java
+C:\Users\jdgomez\Documents\certificados\ca\ServicioReportesS3\Normalizacion\normalizarInformacion\data\src\main\java\com\normalizar\utility\impl\ImplMappingCt.java

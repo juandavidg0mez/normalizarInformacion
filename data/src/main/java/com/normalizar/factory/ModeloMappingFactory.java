@@ -3,6 +3,7 @@ package com.normalizar.factory;
 import java.util.Map;
 
 import com.normalizar.strategy.MappingStrategyModel;
+import com.normalizar.utility.impl.ImplDinamicasMotores;
 import com.normalizar.utility.impl.ImplInterruptoresMap;
 import com.normalizar.utility.impl.ImplMappingCt;
 
@@ -11,7 +12,9 @@ public class ModeloMappingFactory {
 
     private static final Map<String, MappingStrategyModel> estrategias = Map.of(
             "CT", new ImplMappingCt(),
-            "INTER", new ImplInterruptoresMap());
+            "INTER", new ImplInterruptoresMap(),
+             "DMMotor" , new ImplDinamicasMotores());
+           
 
     public MappingStrategyModel obtenerModeloToMapping(String tipoModelo) {
         MappingStrategyModel estrategia = estrategias.get(tipoModelo);

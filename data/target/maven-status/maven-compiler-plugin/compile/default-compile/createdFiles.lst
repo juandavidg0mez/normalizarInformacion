@@ -1,3 +1,4 @@
+com\normalizar\factory\ModeloMappingFactory.class
 com\normalizar\serviceS3\presigneUrl\domain\PresignedUrl.class
 com\normalizar\domain\Report.class
 com\normalizar\serviceS3\presigneUrl\useCase\IUseCasePresignedUrl.class
@@ -8,6 +9,8 @@ com\normalizar\repositoryDynamoDB\entity\MetaDataReport.class
 com\normalizar\config\descomZip\Utils\useCase\IUseCaseZip.class
 com\normalizar\domain\GraficaDataExi.class
 com\normalizar\teamplateEvent\useCase\impl\ImpleUseCaseTemplateEvent.class
+com\normalizar\utility\impl\ImplMappingCt.class
+com\normalizar\strategy\MappingStrategyModel.class
 com\normalizar\domain\GraficaData.class
 com\normalizar\serviceS3\presigneUrl\domain\dto\DtoUploadZip.class
 com\normalizar\domain\UpdateItemClass.class
@@ -40,17 +43,16 @@ com\normalizar\controller\UpdateConlusionsLambda.class
 com\normalizar\controller\LambdaQueryReportsList.class
 com\normalizar\domain\QueryReportList.class
 com\normalizar\repositoryDynamoDB\ImplUseCaseDynamoDB.class
+com\normalizar\utility\impl\ImplInterruptoresMap.class
 com\normalizar\domain\PdfRenderRequest.class
 com\normalizar\templateMemori\B64ImageReplacedElementFactory.class
-com\normalizar\utility\impl\ImplMappingUseCase.class
 com\normalizar\serviceS3\domain\pojoClass.class
-com\normalizar\utility\ImappingUseCase.class
 com\normalizar\config\descomZip\Utils\zipDescomprimir.class
 com\normalizar\serviceS3\abstracObject\useCase\IUseCaseObjectAbstracS3.class
 com\normalizar\serviceS3\UseCase\impl\ImplUseCaseS3Service.class
 com\normalizar\templateMemori\ItemplateCase.class
 com\normalizar\repositoryDynamoDB\entity\UpdateConlucions.class
 com\normalizar\config\descomZip\Utils\domain\dto\MessageResponse.class
-com\normalizar\utility\impl\ImplMappingUseCase$1.class
+com\normalizar\utility\impl\ImplMappingCt$1.class
 com\normalizar\teamplateEvent\controller\LambdaTemplateEvent.class
 com\normalizar\config\ConfigDynamoDBClient.class

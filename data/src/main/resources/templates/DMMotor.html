@@ -1,0 +1,400 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8" />
+    <title>Reporte del Motor</title>
+</head>
+
+<body>
+    <div class="a4-page">
+
+        <!-- ========== INFORMACIÓN DEL MOTOR ========== -->
+        <div th:if="${InfoGeneral != null}">
+            <table class="table-style">
+                <tr>
+                    <td colspan="6">
+                        <div class="section-title">INFORMACIÓN DEL MOTOR</div>
+                    </td>
+
+                </tr>
+                <tr>
+                    <td class="td-style forTable">Número de serie:</td>
+                    <td class="td-style" th:text="${InformacionGeneral.numero_de_serie}"></td>
+                    <td class="td-style forTable">Potencia [HP]:</td>
+                    <td class="td-style" th:text="${InformacionGeneral.potencia_HP}"></td>
+                    <td class="td-style forTable">Velocidad nominal [RPM]:</td>
+                    <td class="td-style" th:text="${InformacionGeneral.velocidad_nominal}"></td>
+                </tr>
+                <tr>
+                    <td class="td-style forTable">Fabricante:</td>
+                    <td class="td-style" th:text="${InformacionGeneral.fabricante}"></td>
+                    <td class="td-style forTable">Corriente nominal [A]:</td>
+                    <td class="td-style" th:text="${InformacionGeneral.corriente_nom_A}"></td>
+                    <td class="td-style forTable">Frecuencia [Hz]:</td>
+                    <td class="td-style" th:text="${InfoGeneral.frecuencia_nominal}"></td>
+                </tr>
+                <tr>
+                    <td class="td-style forTable">Ubicación:</td>
+                    <td class="td-style" th:text="${InformacionGeneral.ubicacion}"></td>
+                    <td class="td-style forTable">Tensión nominal [V]:</td>
+                    <td class="td-style" th:text="${InformacionGeneral.tension_nom_v}"></td>
+                    <td class="td-style forTable">Tipo de motor:</td>
+                    <td class="td-style" th:text="${InfoGeneral.tipo_motor}"></td>
+                </tr>
+                <tr>
+                    <td class="td-style forTable">Nombre:</td>
+                    <td class="td-style" th:text="${InformacionGeneral.nombre}"></td>
+                    <td class="td-style forTable">Pot. activa [kW]:</td>
+                    <td class="td-style" th:text="${InformacionGeneral.potencia_kW}"></td>
+                    <td class="td-style forTable">Punto de medida:</td>
+                    <td class="td-style" th:text="${InformacionGeneral.punto_de_medida}"></td>
+                </tr>
+            </table>
+        </div>
+
+
+        <!-- ========== TENSIONES DE LÍNEA ========== -->
+        <div id="section-tensiones-linea" th:if="${TensionesLinea != null}">
+            <table class="table-style">
+                <tr>
+                    <td colspan="5">
+                        <div class="section-title">TENSIONES DE LÍNEA</div>
+                    </td>
+                </tr>
+                <tr>
+                    <th class="th-style"></th>
+                    <th class="th-style">Fund RMS [V]</th>
+                    <th class="th-style">Tot RMS [V]</th>
+                    <th class="th-style">C.F.</th>
+                    <th class="th-style">THD</th>
+                </tr>
+                <tr>
+                    <td class="td-style forTable">Fase A - Fase B</td>
+                    <td class="td-style" th:text="${TensionesLinea.V12_fund_rms}"></td>
+                    <td class="td-style" th:text="${TensionesLinea.V12_tot_rms_v}"></td>
+                    <td class="td-style" th:text="${TensionesLinea.V12_CF}"></td>
+                    <td class="td-style" th:text="${TensionesLinea.V12_THD}"></td>
+                </tr>
+                <tr>
+                    <td class="td-style forTable">Fase B - Fase C</td>
+                    <td class="td-style" th:text="${TensionesLinea.V23_fund_rms}"></td>
+                    <td class="td-style" th:text="${TensionesLinea.V23_tot_rms_v}"></td>
+                    <td class="td-style" th:text="${TensionesLinea.V23_CF}"></td>
+                    <td class="td-style" th:text="${TensionesLinea.V23_THD}"></td>
+                </tr>
+                <tr>
+                    <td class="td-style forTable">Fase C - Fase A</td>
+                    <td class="td-style" th:text="${TensionesLinea.V13_fund_rms}"></td>
+                    <td class="td-style" th:text="${TensionesLinea.V13_tot_rms_v}"></td>
+                    <td class="td-style" th:text="${TensionesLinea.V13_CF}"></td>
+                    <td class="td-style" th:text="${TensionesLinea.V13_THD}"></td>
+                </tr>
+                <tr>
+                    <td class="td-style forTable">Promedio</td>
+                    <td class="td-style" th:text="${TensionesLinea.promedio_ph_ph}"></td>
+                </tr>
+                <tr>
+                    <td class="td-style forTable">% Desbalance</td>
+                    <td class="td-style" th:text="${TensionesLinea.desbalance_ph_ph}"></td>
+                </tr>
+                <tr>
+                    <td colspan="5">
+                        <div class="section-title">CONCLUCIONES Y OBSERVACIONES</div>
+                        <ul id="conclusions-tensiones-linea"></ul>
+                    </td>
+                </tr>
+            </table>
+        </div>
+
+
+        <!-- ========== CORRIENTES DE LÍNEA ========== -->
+
+        <div id="section-tensiones-fase" th:if="${TensionesFase != null}">
+            <table class="table-style">
+                <tr>
+                    <td colspan="5">
+                        <div class="section-title">TENSIONES DE FASE</div>
+                    </td>
+                </tr>
+                <tr>
+                    <th class="th-style"></th>
+                    <th class="th-style">Fund RMS [V]</th>
+                    <th class="th-style">Tot RMS [V]</th>
+                    <th class="th-style">C.F.</th>
+                    <th class="th-style">THD</th>
+                </tr>
+                <tr>
+                    <td class="td-style forTable">Fase A</td>
+                    <td class="td-style" th:text="${CorrientesLinea.I1_fund_rms}"></td>
+                    <td class="td-style" th:text="${CorrientesLinea.I1_tot_rms}"></td>
+                    <td class="td-style" th:text="${CorrientesLinea.I1_CF}"></td>
+                    <td class="td-style" th:text="${CorrientesLinea.I1_THD}"></td>
+                </tr>
+                <tr>
+                    <td class="td-style forTable">Fase B</td>
+                    <td class="td-style" th:text="${CorrientesLinea.I2_fund_rms}"></td>
+                    <td class="td-style" th:text="${CorrientesLinea.I2_tot_rms}"></td>
+                    <td class="td-style" th:text="${CorrientesLinea.I2_CF}"></td>
+                    <td class="td-style" th:text="${CorrientesLinea.I2_THD}"></td>
+                </tr>
+                <tr>
+                    <td class="td-style forTable">Fase C</td>
+                    <td class="td-style" th:text="${CorrientesLinea.I3_fund_rms}"></td>
+                    <td class="td-style" th:text="${CorrientesLinea.I3_tot_rms}"></td>
+                    <td class="td-style" th:text="${CorrientesLinea.I3_CF}"></td>
+                    <td class="td-style" th:text="${CorrientesLinea.I3_THD}"></td>
+                </tr>
+                <tr>
+                    <td class="td-style forTable">Promedio</td>
+                    <td class="td-style" th:text="${CorrientesLinea.promedio_corriente}"></td>
+                </tr>
+                <tr>
+                    <td class="td-style forTable">% Desbalance</td>
+                    <td class="td-style" th:text="${CorrientesLinea.desbalance_corriente}"></td>
+                </tr>
+                <tr>
+                    <td colspan="5">
+                        <div class="section-title">CONCLUCIONES Y OBSERVACIONES</div>
+                        <ul id="conclusions-tensiones-fase"></ul>
+                    </td>
+                </tr>
+            </table>
+
+        </div>
+
+        <div id="section-corrientes-linea" th:if="${TensionesFase != null}">
+            <table class="table-style">
+                <tr>
+                    <td colspan="5">
+                        <div class="section-title">CORRIENTES DE LÍNEA</div>
+                    </td>
+                </tr>
+                <tr>
+                    <th class="th-style"></th>
+                    <th class="th-style">Fund RMS [A]</th>
+                    <th class="th-style">Tot RMS [A]</th>
+                    <th class="th-style">C.F.</th>
+                    <th class="th-style">THD</th>
+                </tr>
+                <tr>
+                    <td class="td-style forTable">Fase A</td>
+                    <td class="td-style" th:text="${CorrientesLinea.I1_fund_rms}"></td>
+                    <td class="td-style" th:text="${CorrientesLinea.I1_tot_rms}"></td>
+                    <td class="td-style" th:text="${CorrientesLinea.I1_CF}"></td>
+                    <td class="td-style" th:text="${CorrientesLinea.I1_THD}"></td>
+                </tr>
+                <tr>
+                    <td class="td-style forTable">Fase B</td>
+                    <td class="td-style" th:text="${CorrientesLinea.I2_fund_rms}"></td>
+                    <td class="td-style" th:text="${CorrientesLinea.I2_tot_rms}"></td>
+                    <td class="td-style" th:text="${CorrientesLinea.I2_CF}"></td>
+                    <td class="td-style" th:text="${CorrientesLinea.I2_THD}"></td>
+                </tr>
+                <tr>
+                    <td class="td-style forTable">Fase C</td>
+                    <td class="td-style" th:text="${CorrientesLinea.I3_fund_rms}"></td>
+                    <td class="td-style" th:text="${CorrientesLinea.I3_tot_rms}"></td>
+                    <td class="td-style" th:text="${CorrientesLinea.I3_CF}"></td>
+                    <td class="td-style" th:text="${CorrientesLinea.I3_THD}"></td>
+                </tr>
+                <tr>
+                    <td class="td-style forTable">Promedio</td>
+                    <td class="td-style" th:text="${CorrientesLinea.promedio_corriente}"></td>
+                </tr>
+                <tr>
+                    <td class="td-style forTable">% Desbalance</td>
+                    <td class="td-style" th:text="${CorrientesLinea.desbalance_corriente}"></td>
+                </tr>
+                <tr>
+                    <td colspan="5">
+                        <div class="section-title">CONCLUCIONES Y OBSERVACIONES</div>
+                        <ul id="conclusions-corrientes-linea"></ul>
+                    </td>
+                </tr>
+            </table>
+        </div>
+
+        <div id="section-prueba-potencia" th:if="${Potencias != null}">
+
+            <table class="table-style">
+                <tr>
+                    <td colspan="5">
+                        <div class="section-title">POTENCIA</div>
+                    </td>
+                </tr>
+                <tr>
+                    <th class="th-style"></th>
+                    <th class="th-style">Activa [KW]</th>
+                    <th class="th-style">Reactiva [kVAr]</th>
+                    <th class="th-style">Aparente [kVA]</th>
+                    <th class="th-style">PF</th>
+                </tr>
+                <tr>
+                    <td class="td-style forTable">Fase A</td>
+                    <td class="td-style" th:text="${Potencias.fase1_kW}"></td>
+                    <td class="td-style" th:text="${Potencias.fase1_kVAr}"></td>
+                    <td class="td-style" th:text="${Potencias.fase1_kVA}"></td>
+                    <td class="td-style" th:text="${Potencias.fase1_PF}"></td>
+                </tr>
+                <tr>
+                    <td class="td-style forTable">Fase B</td>
+                    <td class="td-style" th:text="${Potencias.fase2_kW}"></td>
+                    <td class="td-style" th:text="${Potencias.fase2_kVAr}"></td>
+                    <td class="td-style" th:text="${Potencias.fase2_kVA}"></td>
+                    <td class="td-style" th:text="${Potencias.fase2_PF}"></td>
+                </tr>
+                <tr>
+                    <td class="td-style forTable">Fase C</td>
+                    <td class="td-style" th:text="${Potencias.fase3_kW}"></td>
+                    <td class="td-style" th:text="${Potencias.fase3_kVAr}"></td>
+                    <td class="td-style" th:text="${Potencias.fase3_kVA}"></td>
+                    <td class="td-style" th:text="${Potencias.fase3_PF}"></td>
+                </tr>
+                <tr>
+                    <td class="td-style forTable">Total</td>
+                    <td class="td-style" th:text="${Potencias.total_kW}"></td>
+                    <td class="td-style" th:text="${Potencias.total_kVAr}"></td>
+                    <td class="td-style" th:text="${Potencias.total_kVA}"></td>
+                    <td class="td-style" th:text="${Potencias.total_PF}"></td>
+                </tr>
+                <tr>
+                    <td class="td-style forTable">% FLA</td>
+                    <td class="td-style" th:text="${Potencias.porcentaje_FLA}"></td>
+                </tr>
+                <tr>
+                    <td colspan="6">
+                        <div class="section-title">CONCLUCIONES Y OBSERVACIONES</div>
+                        <ul id="conclusions-prueba-potencia"></ul>
+                    </td>
+                </tr>
+            </table>
+        </div>
+        <div th:if="${ComponentesSimetricas != null}">
+            <table class="table-style">
+                <tr>
+                    <td colspan="5">
+                        <div class="section-title">COMPONENTES SIMETRICAS DE SECUENCIA</div>
+                    </td>
+                </tr>
+                <tr>
+                    <th class="th-style"></th>
+                    <th class="th-style">Secuencia positiva</th>
+                    <th class="th-style">Secuencia negativa</th>
+                    <th class="th-style">Secuencia homopolar</th>
+                </tr>
+                <tr>
+                    <td class="td-style forTable">Tensión de linea</td>
+                    <td class="td-style" th:text="${ComponentesSimetricas.tension_linea_pos}"></td>
+                    <td class="td-style" th:text="${ComponentesSimetricas.tension_fase_pos}"></td>
+                    <td class="td-style" th:text="${ComponentesSimetricas.corriente_pos}"></td>
+                </tr>
+                <tr>
+                    <td class="td-style forTable">Tensión de fase</td>
+                    <td class="td-style" th:text="${ComponentesSimetricas.tension_linea_neg}"></td>
+                    <td class="td-style" th:text="${ComponentesSimetricas.tension_fase_neg}"></td>
+                    <td class="td-style" th:text="${ComponentesSimetricas.corriente_neg}"></td>
+                </tr>
+                <tr>
+                    <td class="td-style forTable">Corriente de linea</td>
+                    <td class="td-style" th:text="${ComponentesSimetricas.tension_linea_zero}"></td>
+                    <td class="td-style" th:text="${ComponentesSimetricas.tension_fase_zero}"></td>
+                    <td class="td-style" th:text="${ComponentesSimetricas.corriente_zero}"></td>
+                </tr>
+            </table>
+        </div>
+        <div id="section-prueba-evaluacion-rotor" th:if="${EvaluacionRotor != null}">
+            <table class="table-style">
+                <tr>
+                    <td colspan="5">
+                        <div class="section-title">EVALUACIÓN DE ROTOR</div>
+                    </td>
+                </tr>
+                <tr>
+                    <th class="th-style"></th>
+                    <th class="th-style">Frecuencia Nominal [Hz]</th>
+                    <th class="th-style">Frecuencia Medida [Hz]</th>
+                    <th class="th-style">Desviación [%]</th>
+                </tr>
+                <tr>
+                    <td class="td-style forTable">Fase A</td>
+                    <td class="td-style" th:text="${EvaluacionRotor.frecuencia_nominal}"></td>
+                    <td class="td-style" th:text="${EvaluacionRotor.frecuencia_medida_fase1}"></td>
+                    <td class="td-style" th:text="${EvaluacionRotor.porcentaje_slip}"></td>
+                </tr>
+                <tr>
+                    <td class="td-style forTable">Fase B</td>
+                    <td class="td-style" th:text="${EvaluacionRotor.frecuencia_nominal}"></td>
+                    <td class="td-style" th:text="${EvaluacionRotor.frecuencia_medida_fase2}"></td>
+                    <td class="td-style" th:text="${EvaluacionRotor.porcentaje_slip}"></td>
+                </tr>
+                <tr>
+                    <td class="td-style forTable">Fase C</td>
+                    <td class="td-style" th:text="${EvaluacionRotor.frecuencia_nominal}"></td>
+                    <td class="td-style" th:text="${EvaluacionRotor.frecuencia_medida_fase3}"></td>
+                    <td class="td-style" th:text="${EvaluacionRotor.porcentaje_slip}"></td>
+                </tr>
+                <tr>
+                    <td class="td-style forTable">Velocidad RPM</td>
+                    <td class="td-style" th:text="${EvaluacionRotor.velocidad_rpm}"></td>
+                </tr>
+                <tr>
+                    <td colspan="6">
+                        <div class="section-title">CONCLUCIONES Y OBSERVACIONES</div>
+                        <ul id="conclusions-evaluacion-rotor"></ul>
+                    </td>
+                </tr>
+            </table>
+        </div>
+        <div id="section-prueba-excentricidad" th:if="${EvaluacionExcentricidad != null}">
+            <table class="table-style">
+                <tr>
+                    <td colspan="5">
+                        <div class="section-title">EVALUACIÓN DE EXCENTRICIDAD</div>
+                    </td>
+                </tr>
+                <tr>
+                    <th class="th-style">Pico</th>
+                    <th class="th-style">Amplitud</th>
+                    <th class="th-style">Velocidad</th>
+                </tr>
+                <tr>
+                    <td class="td-style">1</td>
+                    <td class="td-style" th:text="${EvaluacionExcentricidad.pico1_amplitud}"></td>
+                    <td class="td-style" th:text="${EvaluacionExcentricidad.pico1_velocidad}"></td>
+                </tr>
+                <tr>
+                    <td class="td-style" >2</td>
+                    <td class="td-style" th:text="${EvaluacionExcentricidad.pico2_amplitud}"></td>
+                    <td class="td-style" th:text="${EvaluacionExcentricidad.pico2_velocidad}"></td>
+                </tr>
+                <tr>
+                    <td class="td-style" >3</td>
+                    <td class="td-style" th:text="${EvaluacionExcentricidad.pico3_amplitud}"></td>
+                    <td class="td-style" th:text="${EvaluacionExcentricidad.pico3_velocidad}"></td>
+                </tr>
+                <tr>
+                    <td class="td-style" >4</td>
+                    <td class="td-style" th:text="${EvaluacionExcentricidad.pico4_amplitud}"></td>
+                    <td class="td-style" th:text="${EvaluacionExcentricidad.pico4_velocidad}"></td>
+                </tr>
+                 <tr>
+                    <td colspan="3">
+                        <div class="section-title">CONCLUCIONES Y OBSERVACIONES</div>
+                        <ul id="conclusions-excentricidad"></ul>
+                    </td>
+                </tr>
+            </table>
+        </div>
+        <div class="section-title">GRAFICO DE EVALUACIÓN DE ROTOR</div>
+            <div id="grafica_evaluacion_rotor-container">
+                
+            </div>
+        <div class="section-title page-break">GRAFICO DE EVALUACIÓN DE EXCENTRICIDAD</div>
+            <div id="grafica_evaluacion_exentricidad-container">
+                
+            </div>
+    </div>
+</body>
+
+</html>

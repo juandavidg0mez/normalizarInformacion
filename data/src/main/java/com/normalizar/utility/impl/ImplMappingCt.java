@@ -1,6 +1,5 @@
 package com.normalizar.utility.impl;
 
-
 import java.io.IOException;
 
 import java.util.ArrayList;
@@ -71,10 +70,10 @@ public class ImplMappingCt implements MappingStrategyModel {
             // Map<String, String> headerData = new HashMap<>();
             // headerData.put("protocolo", infoGeneral.get("norma") + "-PROT"); // Example
             // headerData.put("hoja", "1 de X"); // Dynamic later?
-            // headerData.put("codigo",  "-CODE"); // Example
+            // headerData.put("codigo", "-CODE"); // Example
             // headerData.put("ciudad", "Bucaramanga"); // Static for now
             // headerData.put("fecha",
-            //         Instant.now().atZone(ZoneId.of("-05:00")).format(DateTimeFormatter.ofPattern("dd/MM/yyyy")));
+            // Instant.now().atZone(ZoneId.of("-05:00")).format(DateTimeFormatter.ofPattern("dd/MM/yyyy")));
             // modelo.put("header", headerData);
 
         }
